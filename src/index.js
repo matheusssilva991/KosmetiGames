@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const connection = require('./database/connection');
 const dotenv = require('dotenv');
 const ejs = require('ejs');
 
@@ -37,7 +36,7 @@ app.get('/', async (req, res) => {
     //const users = await connection.query(sql);
     res.send(html);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error });
   }
 });
 
