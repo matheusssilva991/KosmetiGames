@@ -6,9 +6,9 @@
     "start": "nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Matheus Santos Silva",
   "license": "ISC",
-  "description": "",
+  "description": "E-commerce para a disciplina de Empreendedorismo - UESC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
