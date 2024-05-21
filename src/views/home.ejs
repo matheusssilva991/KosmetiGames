@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-commerce</title>
-</head>
-<body>
-    <h1>Home EJS</h1>
+<%- await include('./components/head.ejs', {title: "Home"}) %>
 
-    <hr>
-    <% for (let i = 0; i < users.length; i++) { %>
-        <p>ID: <%= users[i].id %></p>
-        <p>Nome: <%= users[i].name %></p>
-        <p>Email: <%= users[i].email %></p>
+<div class="container bg-primary border">
+    <h1>Home</h1>
 
-        <hr>
-    <% } %>
-</body>
-</html>
+</div>
+
+<%- await include('./components/footer.ejs') %>

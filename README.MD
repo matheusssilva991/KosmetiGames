@@ -1,0 +1,7 @@
+# Projeto KosmetiGames
+
+## Instalaçao
+
+## Autores
+
+

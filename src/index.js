@@ -3,6 +3,8 @@ const cors = require('cors');
 const app = express();
 const dotenv = require('dotenv');
 const ejs = require('ejs');
+const authenticateController = require('./controllers/authenticate');
+const userController = require('./controllers/user');
 
 // Config
 dotenv.config();
@@ -17,23 +19,13 @@ app.set('views', './src/views')
 const PORT = process.env.PORT || 8080;
 
 // Routes
+app.use('/auth', authenticateController);
+app.use('/user', userController);
+
 
 app.get('/', async (req, res) => {
-  const sql = 'SELECT * FROM user';
   try {
-    const users = [{
-      id: 1,
-      name: 'John Doe',
-      email: 'johnDoe@email.com'
-    },
-    {
-      id: 2,
-      name: 'Jane Doe',
-      email: 'janeDoe@email.com',
-  }];
-
-    const html = await ejs.renderFile('./src/views/home.ejs', { users }, { async: true });
-    //const users = await connection.query(sql);
+    const html = await ejs.renderFile('./src/views/home.ejs', { users: [] }, { async: true });
     res.send(html);
   } catch (error) {
     res.status(500).json({ error: error });

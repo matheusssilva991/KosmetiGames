@@ -1,0 +1,42 @@
+<%- await include('./components/head.ejs', {title: "Cadastrar"}) %>
+
+<div class="container d-flex flex-column align-items-center w-75 mt-5 pt-5">
+    <h1 class="h1">Crie sua conta!</h1>
+
+    <p>É grátis e fácil</p>
+
+    <form action="/user/register" method="post" class="container w-50 fs-6 mt-4 text-black-50">
+        <div class="mb-4">
+            <label for="name" class="form-label">Nome</label>
+            <input type="name" class="form-control text-black-50"
+            id="name" placeholder="Digite seu nome">
+        </div>
+
+        <div class="mb-4">
+            <label for="email" class="form-label">E-mail</label>
+            <input type="email" class="form-control text-black-50"
+            id="email" placeholder="Digite seu e-mail">
+        </div>
+
+        <div class="mb-5">
+            <label for="password" class="form-label">Senha</label>
+            <input type="password" id="password" class="form-control text-black-50" aria-describedby="password"
+            placeholder="Digite sua senha">
+        </div>
+
+        <div class="btn-group w-100">
+            <button class="btn btn-dark rounded-pill" type="submit">Cadastrar</button>
+        </div>
+    </form>
+
+    <div class="text-center">
+        <p class="mt-5 fs-6 text-black-50">Já possui uma conta?
+            <a href="/auth/login" class="link-primary link-offset-2 link-underline-opacity-25
+            link-underline-opacity-100-hover">
+                Entrar
+            </a>
+        </p>
+    </div>
+</div>
+
+<%- await include('./components/footer.ejs') %>
