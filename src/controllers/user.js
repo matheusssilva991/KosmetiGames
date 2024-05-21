@@ -9,4 +9,19 @@ router.get('/register', async (req, res) => {
   res.send(html);
 });
 
+router.post('/register', async (req, res) => {
+  const { name, email, password } = req.body;
+  const data = { name, email, password };
+
+  const result = await userService.create(data);
+
+  if (!result.error) {
+    res.redirect('/')
+  } else {
+    const html = await ejs.renderFile('./src/views/register.ejs',
+    { error: result.error }, { async: true });
+    res.send(html);
+  }
+});
+
 module.exports = router;

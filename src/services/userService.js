@@ -2,30 +2,13 @@ const userModel = require('../models/userModel');
 
 class UserService {
   async create(data) {
-    // Check if the name is empty
-    if (!data.name) {
-      return { error: 'Name is required', status: 400 };
-    }
-
-    // Check if the email is empty
-    if (!data.email) {
-      return { error: 'Email is required', status: 400 };
-    }
-
-    // Check if the password is empty
-    if (!data.password) {
-      return { error: 'Password is required', status: 400 };
-    }
-
     // Check if the password has at least 6 characters
-    if (data.password.length < 6) {
-      return { error: 'Password must have at least 6 characters', status: 400 };
+    if (data.password?.length < 6) {
+      return { error: {password: 'Password must have at least 6 characters'}, status: 400 };
     }
 
-    // Check if the email is already in use
-    const emailAreadyExists = await this.emailAreadyExists(data.email);
-    if (emailAreadyExists.error) {
-      return emailAreadyExists;
+    if (await userModel.findOneByEmail(data.email)) {
+      return { error: {email: 'Email already in use'}, status: 400 };
     }
 
     // Encrypt the password
@@ -53,16 +36,6 @@ class UserService {
 
     delete user.password;
     return user;
-  }
-
-  async emailAreadyExists(email) {
-    const user = await userModel.getUserByEmail(email);
-
-    if (user) {
-      return { error: 'Email already in use', status: 400 };
-    }
-
-    return { error: false, status: 200 };
   }
 }
 
