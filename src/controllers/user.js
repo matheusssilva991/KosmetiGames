@@ -10,10 +10,7 @@ router.get('/register', async (req, res) => {
 });
 
 router.post('/register', async (req, res) => {
-  const { name, email, password } = req.body;
-  const data = { name, email, password };
-
-  const result = await userService.create(data);
+  const result = await userService.create(req.body);
 
   if (!result.error) {
     res.redirect('/')

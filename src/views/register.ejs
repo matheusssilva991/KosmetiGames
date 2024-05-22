@@ -1,6 +1,6 @@
 <%- await include('./components/head.ejs', {title: "Cadastrar"}) %>
 
-<div class="container d-flex flex-column align-items-center w-75 mt-4 pt-5">
+<div class="container d-flex flex-column align-items-center w-75 mt-3 pt-4">
     <h1 class="h1">Crie sua conta!</h1>
 
     <p>É grátis e fácil</p>
@@ -9,19 +9,39 @@
         <div class="mb-4">
             <label for="name" class="form-label">Nome *</label>
             <input type="name" class="form-control text-black-50"
-            id="name" placeholder="Digite seu nome" required>
+            id="name" placeholder="Digite seu nome" name="name" required>
         </div>
 
         <div class="mb-4">
             <label for="email" class="form-label">E-mail *</label>
             <input type="email" class="form-control text-black-50"
-            id="email" placeholder="Digite seu e-mail" required>
+            id="email" placeholder="Digite seu e-mail" name="email" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="password" class="form-label">Senha *</label>
+            <input type="password" id="password" class="form-control"
+            aria-describedby="passwordHelpBlock" placeholder="Digite sua senha" required
+            pattern="^.{6,}$" name="password">
+            <div>
+                <small id="passwordHelpBlock" class="form-text text-black-50">
+                    Sua senha deve ter no mínimo 6 caracteres.
+                </small>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="address" class="form-label">Endereço *</label>
+            <input type="address" class="form-control text-black-50"
+            id="address" placeholder="Digite seu endereço"
+            name="address" required>
         </div>
 
         <div class="mb-5">
-            <label for="password" class="form-label">Senha *</label>
-            <input type="password" id="password" class="form-control text-black-50"
-            aria-describedby="password" placeholder="Digite sua senha" required>
+            <label for="phone_number" class="form-label">Telefone</label>
+            <input type="phone_number" class="form-control text-black-50"
+            id="phone_number" placeholder="Digite seu telefone" name="phone_number"
+             required>
         </div>
 
         <div class="btn-group w-100">
@@ -30,7 +50,7 @@
     </form>
 
     <div class="text-center">
-        <p class="mt-5 fs-6 text-black-50">Já possui uma conta?
+        <p class="mt-5 fs-6 text-black-50 mb-5">Já possui uma conta?
             <a href="/auth/login" class="link-primary link-offset-2 link-underline-opacity-25
             link-underline-opacity-100-hover">
                 Entrar

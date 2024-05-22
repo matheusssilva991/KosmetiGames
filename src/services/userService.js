@@ -1,14 +1,15 @@
 const userModel = require('../models/userModel');
+const bcrypt = require('bcrypt');
 
 class UserService {
   async create(data) {
     // Check if the password has at least 6 characters
     if (data.password?.length < 6) {
-      return { error: {password: 'Password must have at least 6 characters'}, status: 400 };
+      return { error: {password: 'Senha deve ter ao menos 6 caracteres.'}, status: 400 };
     }
 
     if (await userModel.findOneByEmail(data.email)) {
-      return { error: {email: 'Email already in use'}, status: 400 };
+      return { error: {email: 'E-mail já cadastrado.'}, status: 400 };
     }
 
     // Encrypt the password
@@ -31,7 +32,7 @@ class UserService {
     const user = await userModel.findOne(id);
 
     if (!user) {
-      return { error: 'User not found', status: 404 };
+      return { error: 'Usuário não encontrado.', status: 404 };
     }
 
     delete user.password;

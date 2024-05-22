@@ -10,13 +10,14 @@ router.get('/login', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await authenticateService.login(email, password);
-  if (user) {
+  const result = await authenticateService.login(req.body);
+  console.log(result);
+  
+  if (result.token) {
     res.redirect('/')
   } else {
     const html = await ejs.renderFile('./src/views/login.ejs',
-    { error: 'Invalid email or password' }, { async: true });
+    { error: result.error }, { async: true });
     res.send(html);
   }
 });

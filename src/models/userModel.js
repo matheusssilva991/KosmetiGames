@@ -2,11 +2,12 @@ const connection = require('../database/connection');
 
 class UserModel {
   async create(data) {
-    const { name, email, password } = data;
-    const sql = `INSERT INTO user (name, email, password) VALUES ('${name}', '${email}', '${password}')`;
+    const { name, email, password, address, phone_number } = data;
+    const sql = `INSERT INTO user (name, email, password, address, phone_number) VALUES ('${name}',
+    '${email}', '${password}', '${address}', '${phone_number}')`;
     try {
       await connection.query(sql);
-      return { name, email };
+      return { name, email, address, phone_number};
     } catch (error) {
       return error;
     }
@@ -36,7 +37,7 @@ class UserModel {
     const sql = `SELECT * FROM user WHERE email = '${email}'`;
     try {
       const user = await connection.query(sql);
-      return user;
+      return user[0];
     } catch (error) {
       return error;
     }
