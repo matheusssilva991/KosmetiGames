@@ -15,13 +15,13 @@
         <form action="/login" method="post" class="container w-50 fs-6 mt-4 text-black-50">
             <div class="mb-4">
                 <label for="email" class="form-label">E-mail</label>
-                <input type="email" class="form-control text-black-50" value="<%= user.email %>"
+                <input type="email" class="form-control text-black-50" value="<%= data.email %>"
                 id="email" placeholder="Digite seu e-mail" name="email" required>
             </div>
 
             <div class="mb-5">
                 <label for="password" class="form-label">Senha</label>
-                <input type="password" id="password" class="form-control text-black-50" value="<%= user.password %>"
+                <input type="password" id="password" class="form-control text-black-50" value="<%= data.password %>"
                 aria-describedby="password" placeholder="Digite sua senha" name="password" required>
             </div>
 

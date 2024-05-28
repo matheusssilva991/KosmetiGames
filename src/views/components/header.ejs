@@ -13,22 +13,38 @@
         </button>
     </form>
 
-    <nav class="d-flex justify-content-end" id="header-form-nav">
-        <ul class="nav d-flex gap-4">
-            <li class="nav-item px-2 header-nav-item">
-                <a href="/login" class="nav-link text-white d-flex align-items-center gap-2 p-0">
-                    <i class="bi bi-person fs-3"></i>
-                    <span class="header-nav-link-text">
-                        <p class="m-0">Entrar ou</p>
-                        <p class="m-0">Registrar</p>
-                    </span>
-                </a>
-            </li>
-            <li class="nav-item d-flex align-items-center header-nav-item px-2">
-                <a href="/" class="nav-link text-white d-flex align-items-center gap-2 p-0">
-                    <i class="bi bi-cart3 fs-4"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <% if (user) { %>
+        <nav class="d-flex justify-content-end" id="header-form-nav">
+            <ul class="nav d-flex gap-4">
+                <li class="nav-item px-2 header-nav-item">
+                    <a href="/login" class="nav-link text-white d-flex align-items-center gap-2 p-0">
+                        <i class="bi bi-person fs-3"></i>
+                        <span class="header-nav-link-text">
+                            <p class="m-0"><%= user.name %></p>
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item d-flex align-items-center header-nav-item px-2">
+                    <a href="/" class="nav-link text-white d-flex align-items-center gap-2 p-0">
+                        <i class="bi bi-cart3 fs-4"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    <% } else { %>
+        <nav class="d-flex justify-content-end" id="header-form-nav">
+            <ul class="nav d-flex gap-4">
+                <li class="nav-item px-2 header-nav-item">
+                    <a href="/login" class="nav-link text-white d-flex align-items-center gap-2 p-0">
+                        <i class="bi bi-person fs-3"></i>
+                        <span class="header-nav-link-text">
+                            <p class="m-0">Entrar ou</p>
+                            <p class="m-0">Registrar</p>
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
 </header>
