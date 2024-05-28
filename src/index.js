@@ -12,6 +12,7 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'))
 
 app.set('view engine', 'ejs')
 app.set('views', './src/views')
@@ -19,8 +20,8 @@ app.set('views', './src/views')
 const PORT = process.env.PORT || 8080;
 
 // Routes
-app.use('/auth', authenticateController);
-app.use('/user', userController);
+app.use('/', authenticateController);
+app.use('/', userController);
 
 
 app.get('/', async (req, res) => {

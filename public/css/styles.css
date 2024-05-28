@@ -1,0 +1,26 @@
+.input-group {
+    width: 35%;
+}
+
+.header-nav-link-text{
+    font-size: 0.8rem;
+}
+
+.header-nav-item {
+    border: 1px solid transparent;
+}
+
+.header-nav-item:hover {
+    border: 1px solid white;
+}
+
+#header-form-input:focus {
+    outline: none;
+    border-color: inherit;
+    box-shadow: none;
+}
+
+#header-form-nav {
+    width: fit-content;
+}
+

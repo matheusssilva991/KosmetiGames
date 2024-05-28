@@ -1,8 +1,13 @@
 <%- await include('./components/head.ejs', {title: "Home"}) %>
 
-<div class="container bg-primary border">
-    <h1>Home</h1>
+<div class="d-flex flex-column min-vh-100">
+    <%- await include('./components/header.ejs') %>
 
+    <main class="container flex-grow-1">
+        <h1>Home</h1>
+        <p>Seja bem-vindo ao nosso site!</p>
+    </main>
+
+    <%- await include('./components/footer.ejs') %>
 </div>
 
-<%- await include('./components/footer.ejs') %>

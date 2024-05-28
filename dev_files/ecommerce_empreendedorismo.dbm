@@ -3,8 +3,8 @@
 CAUTION: Do not modify this file unless you know what you are doing.
  Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="1.1.3" use-changelog="false" max-obj-count="7"
-	 last-position="0,0" last-zoom="0.65"
+<dbmodel pgmodeler-ver="1.1.3" use-changelog="false" max-obj-count="9"
+	 last-position="0,0" last-zoom="0.65" scene-rect="0,0,1571.48,1076.8"
 	 default-schema="public" default-owner="postgres"
 	 layers="Default layer"
 	 active-layers="0"
@@ -20,7 +20,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="180" y="300"/>
+	<position x="280" y="420"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -50,7 +50,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="product" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="700" y="300"/>
+	<position x="900" y="340"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -93,7 +93,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="category" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="1180" y="360"/>
+	<position x="1220" y="40"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -117,7 +117,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="game" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="700" y="40"/>
+	<position x="860" y="20"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -148,7 +148,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="order" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="220" y="760"/>
+	<position x="300" y="820"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -163,7 +163,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="order_item" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="700" y="740"/>
+	<position x="900" y="780"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
@@ -211,6 +211,42 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 custom-color="#163893"
 	 src-table="public.&quot;order&quot;"
 	 dst-table="public.order_item"
+	 src-required="false" dst-required="false"/>
+
+<table name="review" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="520" y="20"/>
+	<column name="id" not-null="true">
+		<type name="serial" length="0"/>
+	</column>
+	<column name="stars" not-null="true">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="comment" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="review_pk" type="pk-constr" table="public.review">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="product_has_reviews" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#f84566"
+	 src-table="public.product"
+	 dst-table="public.review"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="user_has_reviews" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#8bbcd3"
+	 src-table="public.&quot;user&quot;"
+	 dst-table="public.review"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>
