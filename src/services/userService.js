@@ -5,11 +5,11 @@ class UserService {
   async create(data) {
     // Check if the password has at least 6 characters
     if (data.password?.length < 6) {
-      return { error: {password: 'Senha deve ter ao menos 6 caracteres.'}, status: 400 };
+      return { error: {password: 'Senha deve ter ao menos 6 caracteres.'}, status: 400, data };
     }
 
     if (await userModel.findOneByEmail(data.email)) {
-      return { error: {email: 'E-mail já cadastrado.'}, status: 400 };
+      return { error: {email: 'E-mail já cadastrado.'}, status: 400, data };
     }
 
     // Encrypt the password

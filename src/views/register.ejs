@@ -9,40 +9,52 @@
             <form action="/register" method="post" class="container w-50 fs-6 mt-4 text-black-50">
                 <div class="mb-4">
                     <label for="name" class="form-label">Nome *</label>
-                    <input type="name" class="form-control text-black-50"
+                    <input type="text" class="form-control text-black-50" value="<%= user.name %>"
                     id="name" placeholder="Digite seu nome" name="name" required>
                 </div>
 
                 <div class="mb-4">
                     <label for="email" class="form-label">E-mail *</label>
-                    <input type="email" class="form-control text-black-50"
+                    <input type="email" class="form-control text-black-50" value="<%= user.email %>"
                     id="email" placeholder="Digite seu e-mail" name="email" required>
+
+                    <% if (error?.email) { %>
+                        <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
+                            <%= error.email %>
+                        </div>
+                    <% } %>
                 </div>
 
                 <div class="mb-4">
                     <label for="password" class="form-label">Senha *</label>
                     <input type="password" id="password" class="form-control"
                     aria-describedby="passwordHelpBlock" placeholder="Digite sua senha" required
-                    pattern="^.{6,}$" name="password">
+                    pattern="^.{6,}$" name="password" value="<%= user.password %>" >
                     <div>
                         <small id="passwordHelpBlock" class="form-text text-black-50">
                             Sua senha deve ter no mínimo 6 caracteres.
                         </small>
                     </div>
+
+                    <% if (error?.password) { %>
+                        <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
+                            <%= error.password %>
+                        </div>
+                    <% } %>
                 </div>
 
                 <div class="mb-4">
                     <label for="address" class="form-label">Endereço *</label>
-                    <input type="address" class="form-control text-black-50"
-                    id="address" placeholder="Digite seu endereço"
+                    <input type="text" class="form-control text-black-50"
+                    id="address" placeholder="Digite seu endereço" value="<%= user.address %>"
                     name="address" required>
                 </div>
 
                 <div class="mb-5">
                     <label for="phone_number" class="form-label">Telefone</label>
-                    <input type="phone_number" class="form-control text-black-50"
+                    <input type="tel" class="form-control text-black-50"
                     id="phone_number" placeholder="Digite seu telefone" name="phone_number"
-                     required>
+                     required value="<%= user.phone_number %>" >
                 </div>
 
                 <div class="btn-group w-100">

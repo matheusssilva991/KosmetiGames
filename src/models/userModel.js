@@ -7,7 +7,7 @@ class UserModel {
     '${email}', '${password}', '${address}', '${phone_number}')`;
     try {
       await connection.query(sql);
-      return { name, email, address, phone_number};
+      return { name, email, address, phone_number };
     } catch (error) {
       return error;
     }

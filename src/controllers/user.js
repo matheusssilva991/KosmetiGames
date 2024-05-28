@@ -5,7 +5,7 @@ const ejs = require('ejs');
 const userService = require('../services/userService');
 
 router.get('/register', async (req, res) => {
-  const html = await ejs.renderFile('./src/views/register.ejs', {error: null}, { async: true})
+  const html = await ejs.renderFile('./src/views/register.ejs', {error: null, user: {}}, { async: true})
   res.send(html);
 });
 
@@ -16,7 +16,7 @@ router.post('/register', async (req, res) => {
     res.redirect('/')
   } else {
     const html = await ejs.renderFile('./src/views/register.ejs',
-    { error: result.error }, { async: true });
+    { error: result.error, user: result.data }, { async: true });
     res.send(html);
   }
 });
