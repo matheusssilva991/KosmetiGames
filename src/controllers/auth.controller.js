@@ -4,7 +4,7 @@ const ejs = require('ejs');
 const jsonwebtoken = require('jsonwebtoken');
 
 const authMiddleware = require('../middlewares/auth.middleware');
-const authenticateService = require('../services/authService');
+const authenticateService = require('../services/auth.service');
 
 router.get('/login', authMiddleware.unauth, async (req, res) => {
   const html = await ejs.renderFile('./src/views/login.ejs', {error: null, data: {}, user: null }, { async: true})

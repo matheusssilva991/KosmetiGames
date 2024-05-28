@@ -1,8 +1,8 @@
-<%- await include('./components/head.ejs', {title: "Cadastrar"}) %>
+<%- await include('../components/head.ejs', {title: "Cadastrar"}) %>
 
 <div class="d-flex flex-column min-vh-100">
-    <%- await include('./components/header.ejs') %>
-    <main class="container d-flex flex-column align-items-center w-75 mt-3 pt-4">
+    <%- await include('../components/header.ejs') %>
+    <main class="container d-flex flex-column align-items-center w-75 mt-3 pt-4 flex-grow-1">
         <h1 class="h1">Crie sua conta!</h1>
             <p>É grátis e fácil</p>
 
@@ -71,7 +71,8 @@
                 </p>
             </div>
     </main>
+
+    <%- await include('../components/footer.ejs') %>
 </div>
 
 
-<%- await include('./components/footer.ejs') %>
