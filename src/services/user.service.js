@@ -35,8 +35,32 @@ class UserService {
       return { error: 'Usuário não encontrado.', status: 404 };
     }
 
-    delete user.password;
     return user;
+  }
+
+  async update(id, data) {
+    const user = await this.findOne(id);
+
+    if (user.error) {
+      return user;
+    }
+
+    if (data.password) {
+      if (data.password.length < 6) {
+        return { error: {password: 'Senha deve ter ao menos 6 caracteres.'}, status: 400, data };
+      }
+
+      const hash = bcrypt.hashSync(data.password, 10);
+      data.password = hash;
+    }
+
+    if (data.email && data.email !== user.email) {
+      if (await userModel.findOneByEmail(data.email)) {
+        return { error: {email: 'E-mail já cadastrado.'}, status: 400, data };
+      }
+    }
+
+    return await userModel.update(id, data);
   }
 }
 

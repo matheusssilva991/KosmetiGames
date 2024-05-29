@@ -14,6 +14,14 @@ class AuthMiddleware {
       next();
     }
   }
+
+  owner(req, res, next) {
+    if (req.session.user.id == req.params.id) {
+      next();
+    } else {
+      res.redirect('/');
+    }
+  }
 }
 
 module.exports = new AuthMiddleware();

@@ -1,0 +1,45 @@
+<%- await include('../components/head.ejs', {title: "Página do produto"}) %>
+
+<div class="d-flex flex-column min-vh-100">
+    <%- await include('../components/header.ejs') %>
+
+    <main class="container flex-grow-1">
+        <% if (product.error) { %>
+            <div class="alert alert-danger mt-4 p-1 text-center" role="alert">
+                <%= product.error %>
+            </div>
+        <% } %>
+
+        <h1>Ver Produto</h1>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title
+                    <% if( product.stock === 0 ) { %>
+                        text-danger
+                    <% } %>
+                ">
+                    <%= product.name %>
+                </h5>
+                <p class="card-text">
+                    <%= product.description %>
+                </p>
+                <img src="<%=product.image_path %>" alt="" width="20%">
+                <p>
+                    <strong>Category:</strong> <%= product.category %>
+                </p>
+                <p class="card-text">
+                    <strong>Price:</strong> <%= product.price %>
+                </p>
+                <p class="card-text">
+                    <strong>Stock:</strong> <%= product.stock %>
+                </p>
+                <a href="/product/<%= product.id %>" class="btn btn-primary">View</a>
+            </div>
+        </div>
+
+    </main>
+
+    <%- await include('../components/footer.ejs') %>
+</div>
+
