@@ -23,7 +23,7 @@ router.post('/register', authMiddleware.unauth, async (req, res) => {
   }
 });
 
-router.get('/user/:id', async (req, res) => {
+router.get('/user/:id', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
   const user = req.session.user;
   const id = req.params.id;
   const result = await userService.findOne(id);
@@ -31,18 +31,18 @@ router.get('/user/:id', async (req, res) => {
   const data = result;
   delete data.error
 
-  const html = await ejs.renderFile('./src/views/user/view_user.ejs', { user, error, data }, { async: true });
+  const html = await ejs.renderFile('./src/views/user/edit_user.ejs', { user, error, data }, { async: true });
   res.send(html);
 });
 
-router.patch('/user/edit', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
+router.post('/user/:id/edit', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
   const user = req.session.user;
-  const { error, data } = await userService.update(user.id, req.body);
+  const { error, data, ...result } = await userService.update(user.id, req.body);
 
   if (!error) {
     res.redirect('/')
   } else {
-    const html = await ejs.renderFile('./src/views/user/update_user.ejs',
+    const html = await ejs.renderFile('./src/views/user/edit_user.ejs',
     { error, data, user }, { async: true });
     res.send(html);
   }

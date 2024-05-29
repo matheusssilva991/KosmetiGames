@@ -35,6 +35,7 @@ class UserService {
       return { error: 'Usuário não encontrado.', status: 404 };
     }
 
+    delete user.password;
     return user;
   }
 
@@ -58,6 +59,8 @@ class UserService {
       if (await userModel.findOneByEmail(data.email)) {
         return { error: {email: 'E-mail já cadastrado.'}, status: 400, data };
       }
+    } else {
+      data.password = undefined;
     }
 
     return await userModel.update(id, data);

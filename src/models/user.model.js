@@ -44,13 +44,19 @@ class UserModel {
   }
 
   async update(id, data) {
-    const { name, email, password, address, phone_number } = data;
+    const { name, email, address, phone_number } = data;
+    let { password } = data;
+    const user = await this.findOne(id);
+
+    if (user && !password) {
+      password = user.password;
+    }
+
     const sql = `UPDATE user SET name = '${name}', email = '${email}', password = '${password}',
     address = '${address}', phone_number = '${phone_number}' WHERE id = ${id}`;
 
     try {
-      await connection.query(sql);
-      return { name, email, address, phone_number };
+      return await connection.query(sql);
     } catch (error) {
       return error;
     }
