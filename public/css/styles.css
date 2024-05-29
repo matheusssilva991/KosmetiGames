@@ -24,3 +24,10 @@
     width: fit-content;
 }
 
+.smaller-container {
+    width: 13vw;
+}
+
+.small-font-size {
+    font-size: 0.85rem;
+}
