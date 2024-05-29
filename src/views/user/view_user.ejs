@@ -1,0 +1,74 @@
+<%- await include('../components/head.ejs', {title: "Visualizar perfil"}) %>
+
+<div class="d-flex flex-column min-vh-100">
+    <%- await include('../components/header.ejs') %>
+    <main class="container d-flex flex-column align-items-center w-75 mt-3 pt-4 flex-grow-1">
+        <% if (error) { %>
+            <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <h1 class="h1">Editar perfil</h1>
+
+        <form action="/user/edit" method="patch" class="container w-50 fs-6 mt-4 text-black-50 mb-5">
+            <div class="mb-4">
+                <label for="name" class="form-label">Nome</label>
+                <input type="text" class="form-control text-black-50" value="<%= data.name %>"
+                id="name" placeholder="Digite seu nome" name="name">
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="form-label">E-mail *</label>
+                <input type="email" class="form-control text-black-50" value="<%= data.email %>"
+                id="email" placeholder="Digite seu e-mail" name="email">
+
+                <% if (error?.email) { %>
+                    <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
+                        <%= error.email %>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="form-label">Senha *</label>
+                <input type="password" id="password" class="form-control"
+                aria-describedby="passwordHelpBlock" placeholder="Digite sua senha"
+                pattern="^.{6,}$" name="password" value="<%= data.password %>" >
+                <div>
+                    <small id="passwordHelpBlock" class="form-text text-black-50">
+                        Sua senha deve ter no mínimo 6 caracteres.
+                    </small>
+                </div>
+
+                <% if (error?.password) { %>
+                    <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
+                        <%= error.password %>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="mb-4">
+                <label for="address" class="form-label">Endereço *</label>
+                <input type="text" class="form-control text-black-50"
+                id="address" placeholder="Digite seu endereço" value="<%= data.address %>"
+                name="address">
+            </div>
+
+            <div class="mb-4">
+                <label for="phone_number" class="form-label">Telefone</label>
+                <input type="tel" class="form-control text-black-50"
+                id="phone_number" placeholder="Digite seu telefone" name="phone_number"
+                 value="<%= data.phone_number %>" >
+            </div>
+
+            <div class="btn-group w-100">
+                <button class="btn btn-dark rounded-pill" type="submit">Atualizar</button>
+            </div>
+        </form>
+    </main>
+
+    <%- await include('../components/footer.ejs') %>
+</div>
+
+

@@ -27,7 +27,7 @@ class UserModel {
     const sql = `SELECT * FROM user WHERE id = ${id}`;
     try {
       const user = await connection.query(sql);
-      return user;
+      return user[0];
     } catch (error) {
       return error;
     }
@@ -38,6 +38,19 @@ class UserModel {
     try {
       const user = await connection.query(sql);
       return user[0];
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async update(id, data) {
+    const { name, email, password, address, phone_number } = data;
+    const sql = `UPDATE user SET name = '${name}', email = '${email}', password = '${password}',
+    address = '${address}', phone_number = '${phone_number}' WHERE id = ${id}`;
+
+    try {
+      await connection.query(sql);
+      return { name, email, address, phone_number };
     } catch (error) {
       return error;
     }

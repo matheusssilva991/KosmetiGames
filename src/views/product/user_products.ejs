@@ -1,10 +1,10 @@
-<%- await include('../components/head.ejs', {title: "Home"}) %>
+<%- await include('../components/head.ejs', {title: "Produtos do usuário"}) %>
 
 <div class="d-flex flex-column min-vh-100">
     <%- await include('../components/header.ejs') %>
 
     <main class="container flex-grow-1">
-        <h1>Home</h1>
+        <h1>Produtos do usuário</h1>
         <% for( let i = 0; i < products.length; i++ ) { %>
             <div class="card">
                 <div class="card-body">

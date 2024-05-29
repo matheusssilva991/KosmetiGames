@@ -12,7 +12,25 @@ router.get('/', async (req, res) => {
   const user = req.session.user;
   const products = await productService.findAll();
 
-  const html = await ejs.renderFile('./src/views/product/products.ejs', { user, products }, { async: true });
+  const html = await ejs.renderFile('./src/views/home.ejs', { user, products }, { async: true });
+  res.send(html);
+});
+
+router.get('/product/:id', async (req, res) => {
+  const user = req.session.user;
+  const id = req.params.id;
+  const product = await productService.findOne(id);
+
+  const html = await ejs.renderFile('./src/views/product/view_product.ejs', { user, product }, { async: true });
+  res.send(html);
+});
+
+router.get('/user/:id/products', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
+  const user = req.session.user;
+  const id = req.params.id;
+  const products = await productService.findByUserId(id);
+
+  const html = await ejs.renderFile('./src/views/product/user_products.ejs', { user, products }, { async: true });
   res.send(html);
 });
 

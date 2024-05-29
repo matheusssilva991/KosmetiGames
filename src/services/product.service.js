@@ -45,10 +45,18 @@ class ProductService {
     const product = await productModel.findOne(id);
 
     if (!product) {
-      return { error: 'Producto não encontrado.', status: 404 };
+      return { error: 'Produto não encontrado.', status: 404 };
     }
 
     return product;
+  }
+
+  async findReviews(id) {
+    return await productModel.findReviews(id);
+  }
+
+  async findByUserId(id) {
+    return await productModel.findByUserId(id);
   }
 }
 

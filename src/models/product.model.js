@@ -24,10 +24,10 @@ class ProductModel {
   }
 
   async findOne(id) {
-    const sql = `SELECT * FROM product INNER JOIN category ON product.category_id = category.id INNER JOIN game ON product.game_id = game.id WHERE id = ${id}`;
+    const sql = `SELECT * FROM product INNER JOIN category ON product.category_id = category.id INNER JOIN game ON product.game_id = game.id WHERE product.id = ${id}`;
     try {
       const product = await connection.query(sql);
-      return product;
+      return product[0];
     } catch (error) {
       return error;
     }
@@ -38,6 +38,16 @@ class ProductModel {
     try {
       const reviews = await connection.query(sql);
       return reviews;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async findByUserId(id) {
+    const sql = `SELECT * FROM product INNER JOIN category ON product.category_id = category.id INNER JOIN game ON product.game_id = game.id WHERE user_id = ${id}`;
+    try {
+      const products = await connection.query(sql);
+      return products;
     } catch (error) {
       return error;
     }
