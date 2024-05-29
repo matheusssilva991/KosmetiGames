@@ -2,12 +2,12 @@ const connection = require('../database/connection');
 
 class ProductModel {
   async create(data) {
-    const { name, description, price, stock, user_id, category_id, game_id } = data;
-    const sql = `INSERT INTO product (name, description, price, stock, user_id, category_id, game_id) VALUES ('${name}',
-    '${description}', '${price}', '${stock}', '${user_id}', '${category_id}', '${game_id}')`;
+    const { name, description, price, stock, image_path, user_id, category_id, game_id } = data;
+    const sql = `INSERT INTO product (name, description, price, stock, image_path, user_id, category_id, game_id) VALUES ('${name}',
+    '${description}', '${price}', '${stock}', '${image_path}', '${user_id}', '${category_id}', '${game_id}')`;
     try {
       await connection.query(sql);
-      return { name, description, price, stock, user_id, category_id, game_id };
+      return { name, description, price, stock, image_path, user_id, category_id, game_id };
     } catch (error) {
       return error;
     }

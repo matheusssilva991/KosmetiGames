@@ -2,9 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const dotenv = require('dotenv');
-const ejs = require('ejs');
 const router = require('./routes/routes');
 const session = require('express-session');
+const path = require('path');
 
 // Config
 dotenv.config();
@@ -27,17 +27,6 @@ const PORT = process.env.PORT || 8080;
 
 // Routes
 app.use('/', router);
-
-
-app.get('/', async (req, res) => {
-  try {
-    const user = req.session.user;
-    const html = await ejs.renderFile('./src/views/home.ejs', { user }, { async: true });
-    res.send(html);
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
