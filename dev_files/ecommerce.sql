@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `ecommerce` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `ecommerce`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Linux (x86_64)
 --
 -- Host: localhost    Database: ecommerce
@@ -27,7 +29,7 @@ CREATE TABLE `category` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,7 +44,7 @@ CREATE TABLE `game` (
   `name` varchar(255) NOT NULL,
   `enterprise` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,12 +71,13 @@ DROP TABLE IF EXISTS `order_item`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order_item` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `quantity` int unsigned NOT NULL,
   `product_id` int unsigned NOT NULL,
   `order_id` int unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id1_idx` (`product_id`),
   KEY `order_id1_idx` (`order_id`),
-  CONSTRAINT `order_id1` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`),
+  CONSTRAINT `order_id1` FOREIGN KEY (`order_id`) REFERENCES `order` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `product_id1` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -92,6 +95,7 @@ CREATE TABLE `product` (
   `description` longtext NOT NULL,
   `price` float unsigned NOT NULL,
   `stock` int unsigned NOT NULL,
+  `image_path` varchar(255) NOT NULL,
   `user_id` int unsigned NOT NULL,
   `category_id` int unsigned NOT NULL,
   `game_id` int unsigned NOT NULL,
@@ -102,7 +106,7 @@ CREATE TABLE `product` (
   CONSTRAINT `category_id1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`),
   CONSTRAINT `game_id1` FOREIGN KEY (`game_id`) REFERENCES `game` (`id`),
   CONSTRAINT `user_id1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,4 +156,4 @@ CREATE TABLE `user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-28 17:18:34
+-- Dump completed on 2024-05-28 21:48:47

@@ -47,7 +47,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="product" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+<table name="product" layers="0" collapse-mode="2" max-obj-count="10" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
 	<position x="900" y="340"/>
@@ -66,14 +66,17 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="stock" not-null="true">
 		<type name="numeric" length="100"/>
 	</column>
+	<column name="image_path" not-null="true">
+		<type name="varchar" length="255"/>
+	</column>
 	<constraint name="product_pk" type="pk-constr" table="public.product">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="id_category" index="6"/>
-		<object name="id_game" index="7"/>
-		<object name="id_user" index="5"/>
+		<object name="id_category" index="7"/>
+		<object name="id_game" index="8"/>
+		<object name="id_user" index="6"/>
 	</customidxs>
 	<customidxs object-type="constraint">
 		<object name="category_fk" index="1"/>
@@ -160,21 +163,26 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="order_item" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+<table name="order_item" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
 	<schema name="public"/>
 	<role name="postgres"/>
 	<position x="900" y="780"/>
 	<column name="id" not-null="true">
 		<type name="serial" length="0"/>
 	</column>
+	<column name="quantity" not-null="true">
+		<type name="numeric" length="1000"/>
+	</column>
 	<constraint name="order_product_pk" type="pk-constr" table="public.order_item">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 
 	<customidxs object-type="column">
-		<object name="id_product" index="1"/>
+		<object name="id_order" index="3"/>
+		<object name="id_product" index="2"/>
 	</customidxs>
 	<customidxs object-type="constraint">
+		<object name="order_fk" index="2"/>
 		<object name="product_fk" index="1"/>
 	</customidxs></table>
 
