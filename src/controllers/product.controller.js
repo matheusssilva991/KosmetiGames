@@ -34,7 +34,7 @@ router.get('/user/:id/products', authMiddleware.auth, authMiddleware.owner, asyn
   res.send(html);
 });
 
-router.get('/product/register', authMiddleware.auth, async (req, res) => {
+router.get('/user/:id/product/register', authMiddleware.auth, async (req, res) => {
   const user = req.session.user;
   const games = await gameService.findAll();
   const categories = await categoryService.findAll();
@@ -44,12 +44,12 @@ router.get('/product/register', authMiddleware.auth, async (req, res) => {
   res.send(html);
 });
 
-router.post('/product/register', upload.single('image'), authMiddleware.auth, async (req, res) => {
+router.post('/user/:id/product/register', upload.single('image'), authMiddleware.auth, async (req, res) => {
   const user = req.session.user;
   const data = req.body;
   const games = await gameService.findAll();
   const categories = await categoryService.findAll();
-  data.user_id = user.id;
+  data.user_id = req.params.id;
   data.image_path = "/images/" + req.file.filename;
 
   const result = await productService.create(data);

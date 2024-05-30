@@ -1,36 +1,36 @@
 <%- await include('../components/head.ejs', {title: "Produtos do usuário"}) %>
 
-<div class="d-flex flex-column min-vh-100">
+<div class="d-flex flex-column min-vh-100 w-100">
     <%- await include('../components/header.ejs') %>
 
-    <main class="container flex-grow-1">
+    <main class="container w-75 d-flex flex-column align-items-start mt-3 pt-4 flex-grow-1 mb-5">
         <h1>Produtos do usuário</h1>
+        <a href="/user/<%= user.id %>/product/register" class="btn btn-primary align-self-end mb-2">Criar produto</a>
+
         <% for( let i = 0; i < products.length; i++ ) { %>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title
-                        <% if( products[i].stock === 0 ) { %>
-                            text-danger
-                        <% } %>
-                    ">
-                        <%= products[i].name %>
-                    </h5>
-                    <p class="card-text">
-                        <%= products[i].description %>
-                    </p>
-                    <img src="<%=products[i].image_path %>" alt="" width="20%">
-                    <p>
-                        <strong>Category:</strong> <%= products[i].category %>
-                    </p>
-                    <p class="card-text">
-                        <strong>Price:</strong> <%= products[i].price %>
-                    </p>
-                    <p class="card-text">
-                        <strong>Stock:</strong> <%= products[i].stock %>
-                    </p>
-                    <a href="/product/<%= products[i].id %>" class="btn btn-primary">View</a>
+            <div class="card mt-1 mb-3 w-100">
+                <div class="row g-0">
+                  <div class="col col-lg-2 d-flex align-items-center border-end">
+                    <img src="<%= products[i].image_path %>" class="image-fluid rounded-start" alt="<%= products[i].name %>">
+                  </div>
+
+                  <div class="col d-flex justify-content-between">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= products[i].name %></h5>
+                      <p class="card-text"><%= products[i].description.substring(0, 300) %></p>
+                      <p class="card-text"><small class="text-body-secondary"><%= products[i].price %></small></p>
+                    </div>
+                  </div>
+
+                  <div class="col col-sm-auto border-start d-flex flex-column align-items-center justify-content-center gap-2 px-2">
+                    <a href="/product/<%= products[i].id %>" class="btn btn-sm btn-secondary">Ver produto</a>
+                    <form action="" method="post">
+                      <input type="hidden" name="product_id" value="<%= products[i].id %>">
+                      <button type="submit" class="btn btn-sm btn-danger">Deletar</button>
+                    </form>
+                  </div>
                 </div>
-            </div>
+              </div>
         <% } %>
     </main>
 
