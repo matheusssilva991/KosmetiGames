@@ -64,11 +64,7 @@
 
                 <div class="mb-4">
                     <label for="description" class="form-label">Descrição *</label>
-                    <textarea class="form-control" id="description" rows="3" name="description">
-                        <% if (data.description) { %>
-                            <%= data.description.trim() %>
-                        <% } %>
-                    </textarea>
+                    <textarea class="form-control" id="description" rows="3" name="description"><% if (data.description) { %><%= data.description.trim() %><% } %></textarea>
                 </div>
 
                 <div class="mb-5">
