@@ -38,7 +38,8 @@ class ProductService {
   }
 
   async findAll() {
-    return await productModel.findAll();
+    const products =  await productModel.findAll();
+    return products;
   }
 
   async findOne(id) {
@@ -57,6 +58,25 @@ class ProductService {
 
   async findByUserId(id) {
     return await productModel.findByUserId(id);
+  }
+
+  async remove(id) {
+    const product = await this.findOne(id);
+
+    if (product.error) {
+      return product;
+    }
+
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const imagePath = path.join(__dirname, '../../public' + product.image_path);
+      fs.unlinkSync(imagePath);
+      return await productModel.remove(id);
+    } catch (error) {
+      console.log(error);
+      return { error: 'Erro ao remover a imagem.', status: 500 };
+    }
   }
 }
 
