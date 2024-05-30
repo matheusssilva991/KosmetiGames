@@ -60,6 +60,18 @@ class ProductModel {
     }
   }
 
+  async update(id, data) {
+    const { name, description, price, stock, image_path, user_id, category_id, game_id } = data;
+    const sql = `UPDATE product SET name = '${name}', description = '${description}', price = '${price}',
+    stock = '${stock}', image_path = '${image_path}', user_id = '${user_id}', category_id = '${category_id}',
+    game_id = '${game_id}' WHERE id = ${id}`;
+    try {
+      return await connection.query(sql);
+    } catch (error) {
+      return error;
+    }
+  }
+
   async remove(id) {
     const sql = `DELETE FROM product WHERE id = ${id}`;
     try {

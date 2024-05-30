@@ -16,13 +16,46 @@ router.get('/', async (req, res) => {
   res.send(html);
 });
 
-router.get('/product/:id', async (req, res) => {
+router.get('/user/:id/product/:product_id/edit', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
   const user = req.session.user;
-  const id = req.params.id;
-  const product = await productService.findOne(id);
+  const { product_id } = req.params;
+  const result = await productService.findOne(product_id);
+  const games = await gameService.findAll();
+  const categories = await categoryService.findAll();
 
-  const html = await ejs.renderFile('./src/views/product/view_product.ejs', { user, product }, { async: true });
+  const html = await ejs.renderFile('./src/views/product/edit_product.ejs',
+  { user, data: result, error:result.error, games, categories }, { async: true });
   res.send(html);
+});
+
+router.post('/user/:id/product/:product_id/edit', upload.single('image'), authMiddleware.auth, authMiddleware.owner, async (req, res) => {
+  const user = req.session.user;
+  const { product_id, id } = req.params;
+  const data = req.body;
+  const games = await gameService.findAll();
+  const categories = await categoryService.findAll();
+  data.id = product_id;
+  data.user_id = id;
+
+  if (req.file) {
+    data.image_path = '/images/' + req.file.filename;
+  }
+
+  const result = await productService.update(product_id, data);
+
+  if (!result.error) {
+    res.redirect('/user/' + user.id + '/products');
+  } else {
+    if (req.file) {
+      const fs = require('fs');
+      const path = require('path');
+      const imagePath = path.join(__dirname, '../../public' + data.image_path);
+      fs.unlinkSync(imagePath);
+    }
+    const html = await ejs.renderFile('./src/views/product/edit_product.ejs',
+    { user, data, error: result.error, games, categories }, { async: true });
+    res.send(html);
+  }
 });
 
 router.get('/user/:id/products', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
@@ -51,7 +84,6 @@ router.post('/user/:id/product/register', upload.single('image'), authMiddleware
   const categories = await categoryService.findAll();
   data.user_id = req.params.id;
   data.image_path = "/images/" + req.file.filename;
-  console.log(data);
 
   const result = await productService.create(data);
 
@@ -72,6 +104,7 @@ router.post('/user/:id/product/:product_id/delete', authMiddleware.auth, authMid
   const { id, product_id } = req.params;
   const products = await productService.findByUserId(id);
   const result = await productService.remove(product_id);
+  const user = req.session.user;
 
   if (!result.error) {
     res.redirect('/user/' + id + '/products');
