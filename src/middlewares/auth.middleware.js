@@ -1,6 +1,10 @@
+function isEmptyObject(obj) {
+   return Object.values(obj).length == 0;
+}
+
 class AuthMiddleware {
   auth(req, res, next) {
-    if (req.session.user) {
+    if (req.session.user && !isEmptyObject(req.session.user)) {
       next();
     } else {
       res.redirect('/login');
@@ -8,7 +12,7 @@ class AuthMiddleware {
   }
 
   unauth(req, res, next) {
-    if (req.session.user) {
+    if (req.session.user && !isEmptyObject(req.session.user)) {
       res.redirect('/');
     } else {
       next();
@@ -22,6 +26,8 @@ class AuthMiddleware {
       res.redirect('/');
     }
   }
+
+
 }
 
 module.exports = new AuthMiddleware();

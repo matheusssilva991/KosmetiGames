@@ -3,7 +3,15 @@
 <div class="d-flex flex-column min-vh-100">
     <%- await include('./components/header.ejs') %>
 
-    <main class = "container-fluid flex-grow-1 mt-5 px-5 d-flex justify-content-between">
+    <form class="d-flex input-group mx-auto mt-4" role="search">
+        <input type="text" class="form-control border-0" placeholder="Search" aria-label="Search"
+        aria-describedby="search-icon" id="header-form-input">
+        <button class="btn btn-light btn-sm" type="submit" id="search-icon">
+            <i class="bi bi-search"></i>
+        </button>
+    </form>
+
+    <main class = "container-fluid flex-grow-1 mt-5 px-4 d-flex justify-content-between">
 
         <%- await include('./components/sidebar.ejs') %>
 

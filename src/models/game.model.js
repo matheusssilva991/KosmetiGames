@@ -26,7 +26,7 @@ class GameModel {
     const sql = `SELECT * FROM game WHERE id = ${id}`;
     try {
       const game = await connection.query(sql);
-      return game;
+      return game[0];
     } catch (error) {
       return error;
     }

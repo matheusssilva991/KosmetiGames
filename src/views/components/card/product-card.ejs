@@ -1,33 +1,44 @@
-<div class="card" style="width: 13rem;">
-    <img src="<%= product.image_path %>" class="card-img-top img-fluid p-2 border-bottom"
-    alt="<%= product.name %>">
-    <div class="card-body">
-      <h5 class="card-title"><%= product.name %></h5>
-      <div class="card-text">
-        <section class = "fs-5">
-          <p>R&#36; <%= product.price %></p>
-        </section>
-        <section class = "fs-6 text-muted text-justify">
-            <p>Observa&ccedil;&otilde;es adicionais</p>
-        </section>
-      </div>
+<form class="card" style="width: 16rem; max-height: 400px; min-height: 300px;" method="post"
+action="/user/<%= user.id %>/cart/product/<%= product.id %>">
+  <img src="<%= product.image_path %>" class="card-img-top img-fluid p-2 border-bottom" alt="<%= product.name %>">
+  <div class="card-body">
+    <h5 class="card-title">
+      <%= product.name %>
+    </h5>
+    <div class="card-text">
+      <section class="fs-5">
+        <p>R&#36; <%= product.price %>
+        </p>
+      </section>
+      <section class="fs-6 text-muted text-justify">
+        <p>Observa&ccedil;&otilde;es adicionais</p>
+      </section>
+    </div>
 
-      <div class="d-flex justify-content-center gap-3">
-        <a href="#" class="btn btn-sm btn-outline-dark">
-          Ver
-        </a>
-        <% if (product.stock > 0) { %>
-          <a href="#" class="btn btn-sm btn-dark">
+    <div class="d-flex justify-content-center gap-3">
+      <a href="/product/<%= product.id %>" class="btn btn-sm btn-outline-dark">
+        Ver
+      </a>
+      <% if (product.stock> 0) { %>
+        <% if (user && Object.values(user).length != 0) { %>
+          <button type="submit" class="btn btn-sm btn-dark">
             <i class="bi bi-cart-plus"></i>
             Carrinho
-          </a>
-        <% } else { %>
-          <button class="btn btn-sm btn-dark" disabled>
-            <i class="bi bi-cart
-            "></i>
-            Esgotado
           </button>
+        <% } else { %>
+          <a href="/login" class="btn btn-sm btn-dark">
+            <i class="bi bi-cart
+          "></i>
+            Carrinho
+          </a>
         <% } %>
-      </div>
+      <% } else { %>
+        <button class="btn btn-sm btn-dark" disabled>
+          <i class="bi bi-cart
+        "></i>
+          Esgotado
+        </button>
+      <% } %>
     </div>
-</div>
+  </div>
+</form>

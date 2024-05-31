@@ -25,8 +25,8 @@ class CategoryModel {
   async findOne(id) {
     const sql = `SELECT * FROM category WHERE id = ${id}`;
     try {
-      const product = await connection.query(sql);
-      return product;
+      const category = await connection.query(sql);
+      return category[0];
     } catch (error) {
       return error;
     }

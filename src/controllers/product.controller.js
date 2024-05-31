@@ -7,9 +7,10 @@ const authMiddleware = require('../middlewares/auth.middleware');
 const productService = require('../services/product.service');
 const gameService = require('../services/game.service');
 const categoryService = require('../services/category.service');
+const cartService = require('../services/cart.service');
 
 router.get('/', async (req, res) => {
-  const user = req.session.user;
+  const user = req.session.user || {};
   const products = await productService.findAll();
   const games = await gameService.findAll();
   const categories = await categoryService.findAll();
@@ -118,6 +119,16 @@ router.post('/user/:id/product/:product_id/delete', authMiddleware.auth, authMid
     { user, products, error: result.error }, { async: true });
     res.send(html);
   }
+});
+
+router.post('/user/:id/cart/product/:product_id', authMiddleware.auth, async (req, res) => {
+  const { id, product_id } = req.params;
+  const result = await cartService.addProduct({ user_id: id, product_id });
+
+  if (!result.error) {
+    res.redirect('/');
+  }
+
 });
 
 module.exports = router;
