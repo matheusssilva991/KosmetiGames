@@ -11,8 +11,13 @@ const categoryService = require('../services/category.service');
 router.get('/', async (req, res) => {
   const user = req.session.user;
   const products = await productService.findAll();
+  const games = await gameService.findAll();
+  const categories = await categoryService.findAll();
 
-  const html = await ejs.renderFile('./src/views/home.ejs', { user, products }, { async: true });
+  const query = req.query;
+
+  const html = await ejs.renderFile('./src/views/home.ejs', { user, products, games, categories },
+   { async: true });
   res.send(html);
 });
 

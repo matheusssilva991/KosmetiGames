@@ -1,118 +1,44 @@
-<aside class = "container-sm smaller-container d-flex flex-column border border-mute mt-5 mx-0 pt-3">
-    <header class = "text-center px-5 mb-3">
-        <h3>Filtros</h3>
-    </header>
-    <main class = "nav flex-column px-3">
-        <section class = "nav-item mb-3">
-            <header class = "text-left">
-                <h4>Jogos</h4>
-            </header>
-            <main class = "text-left text-primary">
-                <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked1" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked1">
-                      Jogo 1
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked2" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked2">
-                      Jogo 2
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked3" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked3">
-                      Jogo 3
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked4" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked4">
-                      Jogo 3
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked5" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked5">
-                      Jogo 4
-                    </label>
-                  </div>
-            </main>
-        </section>
-        <section class = "nav-item mb-3">
-            <header class = "text-left">
-                <h4>Categoria</h4>
-            </header>
-            <main class = "text-left text-primary">
-                <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked6" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked6">
-                      Categoria 1
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked7" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked7">
-                      Categoria 2
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked8" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked8">
-                      Categoria 3
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked9" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked9">
-                      Categoria 3
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked10" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked10">
-                      Categoria 4
-                    </label>
-                  </div>
-            </main>
-        </section>
-        <section class = "nav-item mb-3">
-            <header class = "text-left">
-                <h4>Pre&ccedil;o</h4>
-            </header>
-            <main class = "text-left text-primary">
-                <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked11" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked11">
-                      Tudo
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked12" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked12">
-                      At&eacute; R&#36;25,00
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked13" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked13">
-                        De R&#36;25,00 at&eacute; R&#36;50,00
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked14" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked14">
-                        De R&#36;50,00 at&eacute; R&#36;75,00
-                    </label>
-                  </div>
-                  <div class = "form-check">
-                    <input class = "form-check-input" type = "checkbox" value = "" id = "flexCheckChecked15" />
-                    <label class = "form-check-label small-font-size" for = "flexCheckChecked15">
-                        De R&#36;75,00 at&eacute; R&#36;100,00
-                    </label>
-                  </div>
-            </main>
-        </section>
-    </main>
+<aside class="container-sm smaller-container d-flex flex-column border border-mute rounded-1
+  mx-0 pt-3 mb-5 align-items-start" style="height: fit-content;">
+  <h3 class="align-self-center mb-2">Filtros</h3>
+
+  <form class="nav flex-column ps-2" action="/" method="get">
+    <button type="submit" class="btn btn-sm btn-dark d-flex justify-content-center gap-2 mb-4 align-self-end">
+      <i class="bi bi-search"></i>
+        Filtrar
+    </button>
+
+    <section class="nav-item mb-3">
+      <header class="text-left">
+        <h4>Jogos</h4>
+      </header>
+      <main class="text-left text-primary min-vh-25 max-vh-25">
+        <% for( let i=0; i < games.length; i++ ) { %>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="<%= games[i].id %>"
+              id="flexCheckChecked<%= games[i].id %>" name="game" />
+            <label class="form-check-label small-font-size" for="flexCheckChecked<%= games[i].id %>">
+              <%= games[i].name %>
+            </label>
+          </div>
+          <% } %>
+      </main>
+    </section>
+    <section class="nav-item mb-3">
+      <header class="text-left">
+        <h4>Categoria</h4>
+      </header>
+      <main class="text-left text-primary min-vh-25 max-vh-25">
+        <% for( let i=0; i < categories.length; i++ ) { %>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="<%= categories[i].id %>"
+              id="flexCheckCheckedx<%= categories[i].id %>" name="category" />
+            <label class="form-check-label small-font-size" for="flexCheckCheckedx<%= categories[i].id %>">
+              <%= categories[i].name %>
+            </label>
+          </div>
+          <% } %>
+      </main>
+    </section>
+  </form>
 </aside>

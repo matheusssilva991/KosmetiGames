@@ -31,3 +31,7 @@
 .small-font-size {
     font-size: 0.85rem;
 }
+
+.form-check-input:hover {
+    cursor: pointer;
+}
