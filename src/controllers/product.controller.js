@@ -27,6 +27,16 @@ router.get('/', async (req, res) => {
   res.send(html);
 });
 
+router.get('/product/:id', async (req, res) => {
+  const user = req.session.user || {};
+  const { id } = req.params;
+  const product = await productService.findOne(id);
+  
+  const html = await ejs.renderFile('./src/views/product/view_product.ejs', { user, product, error: product.error },
+   { async: true });
+  res.send(html);
+});
+
 router.get('/user/:id/product/:product_id/edit', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
   const user = req.session.user;
   const { product_id } = req.params;

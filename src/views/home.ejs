@@ -17,6 +17,11 @@
 
         <div class="main-content w-100 d-flex mb-5 gap-3 ms-5 flex-wrap
         justify-content-center" style="height: fit-content;">
+            <% if (products.length == 0) { %>
+                <div class="alert alert-info w-100 mt-4 p-2 text-center" role="alert">
+                Nenhum produto encontrado.
+                </div>
+            <% } %>
             <% for( let i = 0; i < products.length; i++ ) { %>
                 <%- await include('./components/card/product-card.ejs', {product: products[i]}) %>
             <% } %>
