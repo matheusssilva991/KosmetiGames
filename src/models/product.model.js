@@ -3,8 +3,9 @@ const connection = require('../database/connection');
 class ProductModel {
   async create(data) {
     const { name, description, price, stock, image_path, user_id, category_id, game_id } = data;
-    const sql = `INSERT INTO product (name, description, price, stock, image_path, user_id, category_id, game_id) VALUES ('${name}',
-    '${description}', '${price}', '${stock}', '${image_path}', '${user_id}', '${category_id}', '${game_id}')`;
+    const sql = `INSERT INTO product (name, description, price, stock, image_path, user_id, category_id, game_id)
+    VALUES ('${name}', '${description}', '${price}', '${stock}', '${image_path}', '${user_id}',
+     '${category_id}', '${game_id}')`;
     try {
       return await connection.query(sql);
     } catch (error) {
@@ -15,7 +16,7 @@ class ProductModel {
   async findAll() {
     const sql = `SELECT product.id, product.name, description, price, stock, image_path,
     category.name as category_name, game.name as game_name, game.enterprise as game_enterprise,
-    user_id, category_id FROM product INNER JOIN category on category.id = product.category_id
+    user_id, category_id, game_id FROM product INNER JOIN category on category.id = product.category_id
     INNER JOIN game on game.id = product.game_id`;
     try {
       const products = await connection.query(sql);
@@ -27,8 +28,9 @@ class ProductModel {
 
   async findOne(id) {
     const sql = `SELECT product.id, product.name, description, price, stock, image_path, category.name as
-    category_name, game.name as game_name, game.enterprise as game_enterprise, user_id, category_id FROM product
-    INNER JOIN category on category.id = product.category_id INNER JOIN game on game.id = product.game_id WHERE product.id = ${id}`;
+    category_name, game.name as game_name, game.enterprise as game_enterprise, user_id, category_id, game_id
+    FROM product INNER JOIN category on category.id = product.category_id
+    INNER JOIN game on game.id = product.game_id WHERE product.id = ${id}`;
     try {
       const product = await connection.query(sql);
       return product[0];
@@ -49,9 +51,9 @@ class ProductModel {
 
   async findByUserId(id) {
     const sql = `SELECT product.id, product.name, description, price, stock, image_path, category.name as
-    category_name, game.name as game_name, game.enterprise as game_enterprise, user_id, category_id FROM product
-    INNER JOIN category on category.id = product.category_id INNER JOIN game on game.id = product.game_id
-    WHERE user_id = ${id}`;
+    category_name, game.name as game_name, game.enterprise as game_enterprise, user_id, category_id, game_id
+    FROM product INNER JOIN category on category.id = product.category_id
+    INNER JOIN game on game.id = product.game_id WHERE user_id = ${id}`;
     try {
       const products = await connection.query(sql);
       return products;

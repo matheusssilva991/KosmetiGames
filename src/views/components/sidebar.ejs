@@ -15,7 +15,7 @@
       <main class="text-left text-primary min-vh-25 max-vh-25">
         <% for( let i=0; i < games.length; i++ ) { %>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="<%= games[i].id %>"
+            <input class="form-check-input rounded-1" type="radio" value="<%= games[i].id %>"
               id="flexCheckChecked<%= games[i].id %>" name="game" />
             <label class="form-check-label small-font-size" for="flexCheckChecked<%= games[i].id %>">
               <%= games[i].name %>
@@ -31,7 +31,7 @@
       <main class="text-left text-primary min-vh-25 max-vh-25">
         <% for( let i=0; i < categories.length; i++ ) { %>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="<%= categories[i].id %>"
+            <input class="form-check-input rounded-1" type="radio" value="<%= categories[i].id %>"
               id="flexCheckCheckedx<%= categories[i].id %>" name="category" />
             <label class="form-check-label small-font-size" for="flexCheckCheckedx<%= categories[i].id %>">
               <%= categories[i].name %>

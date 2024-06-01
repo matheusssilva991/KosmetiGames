@@ -44,6 +44,24 @@ class ProductService {
     return products;
   }
 
+  async findAllQuery(query) {
+    let products = await productModel.findAll();
+
+    if (query.game) {
+      products = products.filter(product => product.game_id === parseInt(query.game));
+    }
+
+    if (query.category) {
+      products = products.filter(product => product.category_id === parseInt(query.category));
+    }
+
+    if (query.search) {
+      products = products.filter(product => product.name.toLowerCase().includes(query.search.toLowerCase()));
+    }
+
+    return products;
+  }
+
   async findOne(id) {
     const product = await productModel.findOne(id);
 

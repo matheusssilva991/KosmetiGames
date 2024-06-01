@@ -11,11 +11,16 @@ const cartService = require('../services/cart.service');
 
 router.get('/', async (req, res) => {
   const user = req.session.user || {};
-  const products = await productService.findAll();
   const games = await gameService.findAll();
   const categories = await categoryService.findAll();
-
   const query = req.query;
+  let products = [];
+
+  if (query.game || query.category || query.search) {
+    products = await productService.findAllQuery(query);
+  } else {
+    products = await productService.findAll();
+  }
 
   const html = await ejs.renderFile('./src/views/home.ejs', { user, products, games, categories },
    { async: true });
