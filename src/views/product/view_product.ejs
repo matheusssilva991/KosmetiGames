@@ -3,36 +3,64 @@
     <div class="d-flex flex-column min-vh-100">
         <%- await include('../components/header.ejs') %>
 
-            <main class="container d-flex flex-column align-items-center w-100 mt-5 pt-4
-            flex-grow-1 mb-5">
-                <div class="d-flex gap-5 w-75 bg-primary justify-content-center">
-                    <div class="card mb-3" style="max-width: 650px;">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="<%= product.image_path %>" class="img-fluid rounded-start"
-                                    alt="<%= product.name %>">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <%= product.name %>
-                                    </h5>
-                                    <p class="card-text"></p>
-                                    <p class="card-text"><small class="text-body-secondary">1</small>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <main class = "container-fluid d-flex flex-column align-items-center w-100 mt-5 pt-4 flex-grow-1 mb-5">
+                <div class = "d-flex gap-5 w-75 justify-content-center">
+                    <section class = "card mb-3 col-4" style = "max-width: 1080px;">
+                        <main class = "card-body">
+                            <img src = "<%= product.image_path %>" class = "card-img rounded-start" alt = "<%= product.name %>">
+                        </main>
+                    </section>
 
-                    <div class="bg-white p-4">
-                        <div class="form-group d-flex justify-content-between">
-                            <label class="form-label" for="product<%= product.id%>stock">Quantidade:</label>
-                            <input type="text" class="form-control w-25" id="product<%= product.id%>stock">
-                        </div>
-                    </div>
+                    <section class = "card col">
+                        <main class = "card-body">
+                            <h2 class = "card-title"><%= product.name %></h2>
+                            <p class = "card-text fw-medium small">Marca: <%= product.category_id %></p>
+                            <p class = "card-text fw-bold">
+                                R&#36;
+                                <span class = "fs-1">
+                                    <%= product.price %>
+                                </span>                                
+                            </p>
+                            <p class = "card-text text-body-secondary small">
+                                &agrave; vista, no PIX ou no boleto
+                            </p>
+                            <p class = "card-text small">
+                                <a href = "#" class = "text-decoration-none">Ver mais op&ccedil;&otilde;es de pagamento</a>
+                            </p>
+                        </main>
+                    </section>
+
+                    <section class = "card bg-white col-3">
+                        <main class = "card-body d-flex justify-content-around">
+                            <label class = "card-text form-label" for = "product<%= product.id%>stock">Quantidade:</label>
+                            <input type = "text" class = "card-text form-control w-25" id = "product<%= product.id%>stock">
+                        </main>
+                        
+                        <section class = "btn-group-vertical mb-3 align-self-center">
+                            <form action = "" class = "mb-3 align-self-center">
+                                <button class = "btn btn-secondary" type = "submit">Adicionar ao carrinho</button>
+                            </form>
+                            <form action = "" class = "align-self-center">
+                                <button class = "btn btn-dark" type = "submit">Comprar</button>
+                            </form>
+                        </section>
+
+                        <section class = "align-self-center mb-4">
+                            <p class = "card-text small">
+                                <a href = "#" class = "text-decoration-none fw-semibold">Adicionar a lista</a>
+                            </p>
+                        </section>
+                    </section>
                 </div>
+
+                <section class = "w-75 card mt-3">
+                    <main class = "card-body">
+                        <p><%= product.description %></p>
+                    </main>
+                </section>
             </main>
+
+            
 
             <%- await include('../components/footer.ejs') %>
     </div>
