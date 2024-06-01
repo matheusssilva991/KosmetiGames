@@ -13,10 +13,12 @@
                     <% } %>
 
                         <form action="/user/<%= user.id %>/product/<%= data.id %>/edit" method="post"
-                            class="container w-50 fs-6 mt-4 text-black-50" enctype="multipart/form-data">
+                            class="container w-50 fs-6 mt-4 text-black-50 bg-white rounded-2 p-4"
+                            enctype="multipart/form-data">
                             <div class="mb-4">
                                 <label for="name" class="form-label">Nome *</label>
-                                <input type="text" class="form-control text-black-50" value="<%= data.name %>" id="name"
+                                <input type="text" class="form-control text-black-50" value="<%= data.name %>"
+                                 id="name"
                                     placeholder="Digite o nome do produto" name="name" required />
                             </div>
 
@@ -36,7 +38,7 @@
                                 <div>
                                     <label for="stock" class="form-label">Quantidade em estoque *</label>
                                     <input type="number" class="form-control text-black-50" value="<%= data.stock %>"
-                                        id="stock" name="stock" required />
+                                        id="stock" name="stock" required  min="0"/>
 
                                     <% if (error?.stock) { %>
                                         <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
@@ -85,9 +87,8 @@
 
                             <div class="mb-4">
                                 <label for="description" class="form-label">Descrição *</label>
-                                <textarea class="form-control text-start" id="description" rows="3" name="description">
-                                <%=data.description.trim()%>
-                                </textarea>
+                                <textarea class="form-control text-start" id="description" rows="3"
+                                name="description"><%=data.description.trim()%></textarea>
                             </div>
 
                             <div class="mb-5">

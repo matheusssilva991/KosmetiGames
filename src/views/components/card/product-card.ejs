@@ -1,43 +1,55 @@
-<form class="card" style="width: 16rem; max-height: 400px; min-height: 300px;" method="post"
+<form class="card" style="width: 15rem; max-height: 370px; min-height: 370px;" method="post"
 action="/user/<%= user.id %>/cart/product/<%= product.id %>">
   <img src="<%= product.image_path %>" class="card-img-top img-fluid p-2 border-bottom" alt="<%= product.name %>">
   <div class="card-body">
-    <h5 class="card-title">
-      <%= product.name %>
+    <h5 class="card-title fs-6 text-body-secondary">
+      <small>
+        <%= product.name.substring(0, 85) %>
+      </small>
+      <small>
+        <%= product.name.length > 85 ? '...' : '' %>
+      </small>
     </h5>
-    <div class="card-text">
-      <section class="fs-5">
-        <p>R&#36; <%= product.price %>
+    <div class="card-text mt-2 d-flex align-items-center flex-wrap gap-3">
+      <section class="fs-4 p-0">
+        <p class="m-0">R&#36; <%= product.price %>
         </p>
       </section>
-      <section class="fs-6 text-muted text-justify">
-        <p>Observa&ccedil;&otilde;es adicionais</p>
-      </section>
+      <small class="text-primary">
+        30% OFF <i class="bi bi-tag"></i>
+      </small>
     </div>
 
-    <div class="d-flex justify-content-center gap-3">
+    <div class="d-flex justify-content-center gap-3 mt-3">
       <a href="/product/<%= product.id %>" class="btn btn-sm btn-outline-dark">
         Ver
       </a>
-      <% if (product.stock> 0) { %>
-        <% if (user && Object.values(user).length != 0) { %>
-          <button type="submit" class="btn btn-sm btn-dark">
-            <i class="bi bi-cart-plus"></i>
-            Carrinho
-          </button>
+      <% if (user.id != product.user_id) { %>
+        <% if (product.stock> 0) { %>
+          <% if (user && Object.values(user).length != 0) { %>
+            <button type="submit" class="btn btn-sm btn-dark">
+              <i class="bi bi-cart-plus"></i>
+              Carrinho
+            </button>
+          <% } else { %>
+            <a href="/login" class="btn btn-sm btn-dark">
+              <i class="bi bi-cart
+            "></i>
+              Carrinho
+            </a>
+          <% } %>
         <% } else { %>
-          <a href="/login" class="btn btn-sm btn-dark">
+          <button class="btn btn-sm btn-dark" disabled>
             <i class="bi bi-cart
           "></i>
-            Carrinho
-          </a>
+            Esgotado
+          </button>
         <% } %>
       <% } else { %>
-        <button class="btn btn-sm btn-dark" disabled>
-          <i class="bi bi-cart
-        "></i>
-          Esgotado
-        </button>
+        <a href="/user/<%= user.id %>/product/<%= product.id %>/edit" class="btn btn-sm btn-dark">
+          <i class="bi bi-pencil"></i>
+          Editar
+        </a>
       <% } %>
     </div>
   </div>

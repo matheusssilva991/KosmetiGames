@@ -6,8 +6,8 @@
     <main class="container d-flex flex-column align-items-center w-75 mt-3 pt-4 flex-grow-1 mb-5">
         <h1 class="h1">Cadastrar produto</h1>
 
-            <form action="/user/<%= user.id %>/product/register" method="post" class="container w-50 fs-6 mt-4 text-black-50"
-            enctype="multipart/form-data">
+            <form action="/user/<%= user.id %>/product/register" method="post" class="container w-50 fs-6
+                mt-4 text-black-50 bg-white p-4 rounded-2" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label for="name" class="form-label">Nome *</label>
                     <input type="text" class="form-control text-black-50" value="<%= data.name %>"
@@ -30,7 +30,7 @@
                     <div>
                         <label for="stock" class="form-label">Quantidade em estoque *</label>
                         <input type="number" class="form-control text-black-50" value="<%= data.stock %>"
-                        id="stock" name="stock" required>
+                        id="stock" name="stock" required min="0">
 
                         <% if (error?.stock) { %>
                             <div class="alert alert-danger w-100 mt-2 p-1" role="alert">
@@ -64,7 +64,8 @@
 
                 <div class="mb-4">
                     <label for="description" class="form-label">Descrição *</label>
-                    <textarea class="form-control" id="description" rows="3" name="description"><% if (data.description) { %><%= data.description.trim() %><% } %></textarea>
+                    <textarea class="form-control" id="description" rows="3"name="description"
+                    ><% if (data.description) { %><%= data.description.trim() %><% } %></textarea>
                 </div>
 
                 <div class="mb-5">
