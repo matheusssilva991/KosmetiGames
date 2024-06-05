@@ -13,9 +13,9 @@ class CartModel {
   }
 
   async createOrderItem(data) {
-    const { order_id, product_id } = data;
+    const { order_id, product_id, quantity } = data;
     const sql = `INSERT INTO order_item (order_id, product_id, quantity) VALUES
-    ('${order_id}', '${product_id}', '${1}')`;
+    ('${order_id}', '${product_id}', '${quantity}')`;
     try {
       await connection.query(sql);
       return { order_id, product_id, quantity };

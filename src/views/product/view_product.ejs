@@ -1,38 +1,95 @@
 <%- await include('../components/head.ejs', { title: 'Visualizar produto' }) %>
 
-    <div class="d-flex flex-column min-vh-100">
-        <%- await include('../components/header.ejs') %>
+<div class="d-flex flex-column min-vh-100">
+  <%- await include('../components/header.ejs') %>
 
-            <main class="container d-flex flex-column align-items-center w-100 mt-5 pt-4
-            flex-grow-1 mb-5">
-                <div class="d-flex gap-5 w-75 bg-primary justify-content-center">
-                    <div class="card mb-3" style="max-width: 650px;">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="<%= product.image_path %>" class="img-fluid rounded-start"
-                                    alt="<%= product.name %>">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">
-                                        <%= product.name %>
-                                    </h5>
-                                    <p class="card-text"></p>
-                                    <p class="card-text"><small class="text-body-secondary">1</small>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  <main
+    class="container d-flex flex-column align-items-center mt-5 pt-4 w-100 flex-grow-1 mb-5"
+  >
+    <div class="d-flex gap-5 w-80 justify-content-center">
+      <div class="card" style="max-width: 800px; min-width: 800px">
+        <div class="row g-0 ps-3">
+          <div class="col-md-4 d-flex align-items-center">
+            <img
+              src="<%= product.image_path %>"
+              class="img-fluid rounded-start"
+              alt="<%= product.name %>"
+            />
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">
+                <%= product.name %> - <%= product.game_name %>
+              </h5>
+              <p class="card-text text-body-secondary">
+                <small> Empresa: <%= product.game_enterprise %> </small>
+              </p>
+              <p class="card-text mt-4 d-flex flex-column">
+                <strong>
+                  R$ <span class="fs-2 fw-normal"> <%= product.price %> </span>
+                </strong>
 
-                    <div class="bg-white p-4">
-                        <div class="form-group d-flex justify-content-between">
-                            <label class="form-label" for="product<%= product.id%>stock">Quantidade:</label>
-                            <input type="text" class="form-control w-25" id="product<%= product.id%>stock">
-                        </div>
-                    </div>
-                </div>
-            </main>
+                <small class="text-body-secondary">
+                  á vista, no PIX, no boleto ou até 12x no cartão
+                </small>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <%- await include('../components/footer.ejs') %>
+
+      <form action="/user/<%= user.id %>/cart/product/<%= product.id %>" method="post" class="bg-white p-3 w-100 border rounded-2">
+        <div
+          class="form-group d-flex justify-content-between gap-3 align-items-baseline mb-5"
+        >
+          <label class="form-label" for="product<%= product.id%>stock">
+            <small>Quantidade:</small>
+          </label>
+          <input
+            type="number"
+            class="form-control form-control-sm"
+            id="product<%= product.id%>stock"
+            min="1"
+            max="<%= product.stock %>"
+            name="quantity"
+          />
+        </div>
+
+        <% if (user.id != product.user_id) { %> <% if (product.stock> 0) { %> <%
+        if (user && Object.values(user).length !=0) { %>
+        <button type="submit" class="btn btn-sm btn-outline-dark w-100">
+          <i class="bi bi-cart-plus"></i>
+          Carrinho
+        </button>
+        <% } else { %>
+        <a href="/login" class="btn btn-sm btn-outline-dark w-100">
+          <i class="bi bi-cart-plus"></i>
+          Carrinho
+        </a>
+        <% } %> <% } else { %>
+        <button class="btn btn-sm btn-outline-dark w-100" disabled>
+          <i class="bi bi-cart-plus"></i>
+          Esgotado
+        </button>
+        <% } %> <% } else { %>
+        <a
+          href="/user/<%= user.id %>/product/<%= product.id %>/edit"
+          class="btn btn-sm btn-outline-dark w-100"
+        >
+          <i class="bi bi-pencil"></i>
+          Editar
+        </a>
+        <% } %>
+
+        <a href="/user/<%= user.id %>/cart/" class="btn btn-sm btn-dark w-100 mt-3">
+            <i class="bi bi-bag"></i>
+          Comprar
+        </a>
+
+      </form>
     </div>
+  </main>
+
+  <%- await include('../components/footer.ejs') %>
+</div>

@@ -39,3 +39,7 @@ body {
 .form-check-input:hover {
     cursor: pointer;
 }
+
+.w-80 {
+    width: 80%;
+}
