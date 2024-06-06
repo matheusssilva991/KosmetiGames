@@ -3,6 +3,24 @@ const userModel = require('../models/user.model');
 const productModel = require('../models/product.model');
 
 class CartService {
+  async create(data) {
+    const user = await userModel.findOne(data.user_id);
+
+    if (!user) {
+      return { error: 'Usuário não encontrado.', status: 400 };
+    }
+
+    const order = await cartModel.findActiveOrder(data.user_id);
+
+    if (order) {
+      return { error: 'Carrinho já existe.', status: 400 };
+    }
+
+    await cartModel.create(data);
+
+    return data;
+  }
+
   async addProduct(data) {
     const user = await userModel.findOne(data.user_id);
     const product = await productModel.findOne(data.product_id);
@@ -64,8 +82,20 @@ class CartService {
     return order;
   }
 
+  async findInativeOrders(user_id) {
+    const orders = await cartModel.findInativeOrders(user_id);
+
+    return orders;
+  }
+
   async findProductsInOrder(order_id) {
     const products = await cartModel.findProductsInOrder(order_id);
+
+    return products;
+  }
+
+  async findPurchasedProducts(user_id) {
+    const products = await cartModel.findPurchasedProducts(user_id);
 
     return products;
   }

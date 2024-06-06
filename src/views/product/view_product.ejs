@@ -82,10 +82,17 @@
         </a>
         <% } %>
 
-        <a href="/user/<%= user.id %>/cart/" class="btn btn-sm btn-dark w-100 mt-3">
-            <i class="bi bi-bag"></i>
-          Comprar
+        <% if (user && Object.values(user).length != 0) { %>
+          <a href="/user/<%= user.id %>/cart" class="btn btn-sm btn-dark w-100 mt-3">
+              <i class="bi bi-bag"></i>
+            Comprar
+          </a>
+        <% } else { %>
+          <a href="/login" class="btn btn-sm btn-dark w-100 mt-3">
+          <i class="bi bi-bag"></i>
+          Carrinho
         </a>
+        <% } %>
 
       </form>
     </div>
