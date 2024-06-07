@@ -8,7 +8,15 @@ class UserService {
       return { error: {password: 'Senha deve ter ao menos 6 caracteres.'}, status: 400, data };
     }
 
-    if (await userModel.findOneByEmail(data.email)) {
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(data.email)) {
+      return { error: {email: 'E-mail inválido.'}, status: 400, data };
+    }
+
+    // Check if the email is already registered
+    const user = await userModel.findOneByEmail(data.email);
+
+    if (user) {
       return { error: {email: 'E-mail já cadastrado.'}, status: 400, data };
     }
 

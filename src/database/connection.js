@@ -3,6 +3,7 @@ const mysql = require('mysql2/promise');
 
 async function query(sql, args) {
   const db = config.db;
+
   const connection_string = `mysql://${db.user}:${db.password}@${db.host}:${db.port}`;
   let connection = null;
 

@@ -6,24 +6,11 @@
   <main
     class="container w-75 d-flex flex-column align-items-start mt-3 pt-4 flex-grow-1 mb-5"
   >
-    <h1>Meus produtos</h1>
-    <% if (error) { %>
-    <div class="alert alert-danger w-100 mt-4 p-1" role="alert">
-      <%= error %>
-    </div>
-    <% } %>
-
-    <a
-      href="/user/<%= user.id %>/product/register"
-      class="btn btn-dark align-self-end mb-3"
-    >
-      <i class="bi bi-plus-lg"></i>
-      Criar produto
-    </a>
+    <h1 class="mb-5">Carrinho</h1>
 
     <% if (products.length == 0) { %>
       <div class="alert alert-info w-100 mt-4 p-1" role="alert">
-        Nenhum produto cadastrado.
+        Nenhum produto adicionado ao carrinho.
       </div>
     <% } %>
 

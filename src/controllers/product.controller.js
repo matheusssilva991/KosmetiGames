@@ -31,7 +31,7 @@ router.get('/product/:id', async (req, res) => {
   const user = req.session.user || {};
   const { id } = req.params;
   const product = await productService.findOne(id);
-  
+
   const html = await ejs.renderFile('./src/views/product/view_product.ejs', { user, product, error: product.error },
    { async: true });
   res.send(html);
@@ -144,6 +144,31 @@ router.post('/user/:id/cart/product/:product_id', authMiddleware.auth, async (re
     res.redirect('/');
   }
 
+});
+
+router.get('/user/:id/cart', authMiddleware.auth, async (req, res) => {
+  const user = req.session.user;
+  let cart = await cartService.findActiveOrder(user.id);
+
+  if (cart.error) {
+    await cartService.create({ status: 'open', user_id: user.id });
+    cart = await cartService.findActiveOrder(user.id);
+  }
+
+  const products = await cartService.findProductsInOrder(cart.id);
+
+  const html = await ejs.renderFile('./src/views/user/view_cart.ejs', { user, cart, products },
+   { async: true });
+  res.send(html);
+});
+
+router.get('/user/:id/purchased-products', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
+  const user = req.session.user;
+  const products = await cartService.findPurchasedProducts(user.id);
+
+  const html = await ejs.renderFile('./src/views/product/user_purchased_products.ejs', { user, products },
+   { async: true });
+  res.send(html);
 });
 
 module.exports = router;
