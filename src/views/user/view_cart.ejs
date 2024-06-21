@@ -6,13 +6,19 @@
   <main
     class="container w-75 d-flex flex-column align-items-start mt-3 pt-4 flex-grow-1 mb-5"
   >
-    <h1 class="mb-5">Carrinho</h1>
+    <h1 class="">Carrinho</h1>
 
     <% if (products.length == 0) { %>
       <div class="alert alert-info w-100 mt-4 p-1" role="alert">
         Nenhum produto adicionado ao carrinho.
       </div>
     <% } %>
+
+    <form action="" class="align-self-end mb-3">
+      <button type="submit" class="btn btn-dark">
+        Finalizar compra
+      </button>
+    </form>
 
     <% for( let i=0; i < products.length; i++ ) { %>
       <div class="card mt-1 mb-2 w-100">

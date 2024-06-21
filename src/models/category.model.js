@@ -5,7 +5,7 @@ class CategoryModel {
     const { name } = data;
     const sql = `INSERT INTO category (name) VALUES ('${name}')`;
     try {
-      await connection.query(sql);
+      await connection.execute(sql);
       return { name };
     } catch (error) {
       return error;
@@ -15,7 +15,7 @@ class CategoryModel {
   async findAll() {
     const sql = 'SELECT * FROM category';
     try {
-      const categories = await connection.query(sql);
+      const [categories] = await connection.execute(sql);
       return categories;
     } catch (error) {
       return error;
@@ -25,7 +25,7 @@ class CategoryModel {
   async findOne(id) {
     const sql = `SELECT * FROM category WHERE id = ${id}`;
     try {
-      const category = await connection.query(sql);
+      const [category] = await connection.execute(sql);
       return category[0];
     } catch (error) {
       return error;

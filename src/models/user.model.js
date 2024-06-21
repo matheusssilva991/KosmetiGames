@@ -6,7 +6,7 @@ class UserModel {
     const sql = `INSERT INTO user (name, email, password, address, phone_number) VALUES ('${name}',
     '${email}', '${password}', '${address}', '${phone_number}')`;
     try {
-      await connection.query(sql);
+      await connection.execute(sql);
       return { name, email, address, phone_number };
     } catch (error) {
       return error;
@@ -16,7 +16,7 @@ class UserModel {
   async findAll() {
     const sql = 'SELECT * FROM user';
     try {
-      const users = await connection.query(sql);
+      const [users] = await connection.execute(sql);
       return users;
     } catch (error) {
       return error;
@@ -26,7 +26,7 @@ class UserModel {
   async findOne(id) {
     const sql = `SELECT * FROM user WHERE id = ${id}`;
     try {
-      const user = await connection.query(sql);
+      const [user] = await connection.execute(sql);
       return user[0];
     } catch (error) {
       return error;
@@ -36,7 +36,7 @@ class UserModel {
   async findOneByEmail(email) {
     const sql = `SELECT * FROM user WHERE email = '${email}'`;
     try {
-      const user = await connection.query(sql);
+      const [user] = await connection.execute(sql);
       return user[0];
     } catch (error) {
       return error;
@@ -56,7 +56,7 @@ class UserModel {
     address = '${address}', phone_number = '${phone_number}' WHERE id = ${id}`;
 
     try {
-      return await connection.query(sql);
+      return await connection.execute(sql);
     } catch (error) {
       return error;
     }

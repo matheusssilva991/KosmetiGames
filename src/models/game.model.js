@@ -5,7 +5,7 @@ class GameModel {
     const { name, enterprise } = data;
     const sql = `INSERT INTO game (name, enterprise) VALUES ('${name}', '${enterprise}')`;
     try {
-      await connection.query(sql);
+      await connection.execute(sql);
       return { name, enterprise };
     } catch (error) {
       return error;
@@ -15,7 +15,7 @@ class GameModel {
   async findAll() {
     const sql = 'SELECT * FROM game';
     try {
-      const games = await connection.query(sql);
+      const [games] = await connection.execute(sql);
       return games;
     } catch (error) {
       return error;
@@ -25,7 +25,7 @@ class GameModel {
   async findOne(id) {
     const sql = `SELECT * FROM game WHERE id = ${id}`;
     try {
-      const game = await connection.query(sql);
+      const [game] = await connection.execute(sql);
       return game[0];
     } catch (error) {
       return error;
