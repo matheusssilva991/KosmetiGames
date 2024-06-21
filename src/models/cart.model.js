@@ -12,6 +12,15 @@ class CartModel {
     }
   }
 
+  async checkout(id) {
+    const sql = `UPDATE \`order\` SET status = 'closed' WHERE id = ${id}`;
+    try {
+      return await connection.execute(sql);
+    } catch (error) {
+      return error;
+    }
+  }
+
   async createOrderItem(data) {
     const { order_id, product_id, quantity } = data;
     const sql = `INSERT INTO order_item (order_id, product_id, quantity) VALUES
@@ -101,6 +110,15 @@ class CartModel {
   async updateOrderItem(id, data) {
     const { quantity } = data;
     const sql = `UPDATE order_item SET quantity = '${quantity}' WHERE id = ${id}`;
+    try {
+      return await connection.execute(sql);
+    } catch (error) {
+      return error;
+    }
+  }
+
+  async removeProduct(order_id, product_id) {
+    const sql = `DELETE FROM order_item WHERE (order_id = ${order_id} AND product_id = ${product_id})`;
     try {
       return await connection.execute(sql);
     } catch (error) {

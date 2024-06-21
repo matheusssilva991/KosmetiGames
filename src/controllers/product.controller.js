@@ -162,6 +162,17 @@ router.get('/user/:id/cart', authMiddleware.auth, async (req, res) => {
   res.send(html);
 });
 
+router.post('/user/:id/cart/product/:product_id/delete', authMiddleware.auth, async (req, res) => {
+  const { id, product_id } = req.params;
+  const user = req.session.user;
+  const cart = await cartService.findActiveOrder(user.id);
+  const result = await cartService.removeProduct(cart.id, product_id);
+
+  if (!result.error) {
+    res.redirect('/user/' + id + '/cart');
+  }
+});
+
 router.get('/user/:id/purchased-products', authMiddleware.auth, authMiddleware.owner, async (req, res) => {
   const user = req.session.user;
   const products = await cartService.findPurchasedProducts(user.id);
@@ -169,6 +180,16 @@ router.get('/user/:id/purchased-products', authMiddleware.auth, authMiddleware.o
   const html = await ejs.renderFile('./src/views/product/user_purchased_products.ejs', { user, products },
    { async: true });
   res.send(html);
+});
+
+router.post('/user/:id/cart/checkout', authMiddleware.auth, async (req, res) => {
+  const user = req.session.user;
+  const cart = await cartService.findActiveOrder(user.id);
+  const result = await cartService.checkout(cart.id);
+
+  if (!result.error) {
+    res.redirect('/user/' + user.id + '/purchased-products');
+  }
 });
 
 module.exports = router;

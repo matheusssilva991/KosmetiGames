@@ -21,6 +21,18 @@ class CartService {
     return data;
   }
 
+  async checkout(cart_id) {
+    const order = await cartModel.findOne(cart_id);
+
+    if (!order) {
+      return { error: 'Carrinho não encontrado.', status: 404 };
+    }
+    
+    await cartModel.checkout(order.id);
+
+    return order;
+  }
+
   async addProduct(data) {
     const user = await userModel.findOne(data.user_id);
     const product = await productModel.findOne(data.product_id);
@@ -98,6 +110,16 @@ class CartService {
     const products = await cartModel.findPurchasedProducts(user_id);
 
     return products;
+  }
+
+  async removeProduct(order_id, product_id) {
+    const result = await cartModel.removeProduct(order_id, product_id);
+
+    if (!result) {
+      return { error: 'Produto não encontrado.', status: 404 };
+    }
+
+    return result;
   }
 
 }

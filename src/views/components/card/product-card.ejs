@@ -12,7 +12,7 @@ action="/user/<%= user.id %>/cart/product/<%= product.id %>">
     </h5>
     <div class="card-text mt-2 d-flex align-items-center flex-wrap gap-3">
       <section class="fs-4 p-0">
-        <p class="m-0">R&#36; <%= product.price %>
+        <p class="m-0">R&#36; <%= product.price.toFixed(2) %>
         </p>
       </section>
       <small class="text-primary">

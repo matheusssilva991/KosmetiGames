@@ -14,11 +14,19 @@
       </div>
     <% } %>
 
-    <form action="" class="align-self-end mb-3">
-      <button type="submit" class="btn btn-dark">
-        Finalizar compra
-      </button>
-    </form>
+    <% if (products.length > 0) { %>
+      <form action="/user/<%=user.id%>/cart/checkout" method="post"
+        class="align-self-end mb-3 bg-white p-2 d-flex align-items-center">
+        <strong>Total R$: </strong> <%= products.reduce((sum, product) => {
+          return sum + product.price;
+        }, 0).toFixed(2) %>
+
+        <button type="submit" class="btn btn-dark ms-4">
+          Finalizar compra
+        </button>
+      </form>
+    <% } %>
+
 
     <% for( let i=0; i < products.length; i++ ) { %>
       <div class="card mt-1 mb-2 w-100">
@@ -56,7 +64,7 @@
 
                 <p>
                   <strong>Preço:</strong>
-                  R$ <%= products[i].price %>
+                  R$ <%= products[i].price.toFixed(2) %>
                 </p>
                 <p>
                   <strong>Quantidade:</strong>
@@ -69,17 +77,13 @@
           <div
             class="col col-sm-auto border-start d-flex flex-column align-items-center justify-content-center gap-2 px-2"
           >
-            <a href="/user/<%= user.id %>/product/<%= products[i].id %>/edit" class="btn btn-sm btn-dark">
-              Editar
-            </a>
-
             <button
               type="button"
               class="btn btn-sm btn-outline-dark"
               data-bs-toggle="modal"
               data-bs-target="#staticBackdrop<%= products[i].id %>"
             >
-              Deletar
+              Remover
             </button>
           </div>
         </div>
@@ -100,7 +104,7 @@
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="staticBackdropLabel">
                 <i class="bi bi-exclamation-circle-fill"></i>
-                Deletar Produto
+                Remover Produto do Carrinho
               </h1>
               <button
                 type="button"
@@ -110,7 +114,7 @@
               ></button>
             </div>
             <div class="modal-body">
-              <p>Você tem certeza que deseja deletar este produto?</p>
+              <p>Você tem certeza que deseja remover este produto do carrinho?</p>
             </div>
             <div class="modal-footer">
               <button
@@ -121,7 +125,7 @@
                 Fechar
               </button>
               <form
-                action="/user/<%=user.id%>/product/<%=products[i].id%>/delete"
+                action="/user/<%=user.id%>/cart/product/<%=products[i].id%>/delete"
                 method="post"
               >
                 <input
@@ -129,7 +133,7 @@
                   name="product_id"
                   value="<%= products[i].id %>"
                 />
-                <button type="submit" class="btn btn-sm btn-dark">Deletar</button>
+                <button type="submit" class="btn btn-sm btn-dark">Remover</button>
               </form>
             </div>
           </div>
