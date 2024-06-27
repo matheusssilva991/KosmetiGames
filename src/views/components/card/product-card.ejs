@@ -1,27 +1,27 @@
-<form class="card" style="width: 15rem; max-height: 370px; min-height: 370px;" method="post"
-action="/user/<%= user.id %>/cart/product/<%= product.id %>">
-  <img src="<%= product.image_path %>" class="card-img-top img-fluid p-2 border-bottom" alt="<%= product.name %>">
-  <div class="card-body">
-    <h5 class="card-title fs-6 text-body-secondary">
+<form class = "card" style = "width: 15rem; max-height: 370px; min-height: 370px;" method = "post"
+action = "/user/<%= user.id %>/cart/product/<%= product.id %>">
+  <img src = "<%= product.image_path %>" class = "card-img-top img-fluid p-2 border-bottom" alt = "<%= product.name %>"  style = "max-height: 210px;">
+  <div class = "card-body">
+    <h5 class = "card-title fs-6 text-body-secondary">
       <small>
-        <%= product.name.substring(0, 85) %>
+        <%= product.name.substring(0, 30) %>
       </small>
       <small>
         <%= product.name.length > 85 ? '...' : '' %>
       </small>
     </h5>
-    <div class="card-text mt-2 d-flex align-items-center flex-wrap gap-3">
-      <section class="fs-4 p-0">
-        <p class="m-0">R&#36; <%= product.price.toFixed(2) %>
+    <div class = "card-text mt-2 d-flex align-items-center flex-wrap gap-3">
+      <section class = "fs-4 p-0">
+        <p class = "m-0">R&#36; <%= product.price.toFixed(2) %>
         </p>
       </section>
-      <small class="text-primary">
-        30% OFF <i class="bi bi-tag"></i>
+      <small class = "text-primary">
+        30% OFF <i class = "bi bi-tag"></i>
       </small>
     </div>
 
-    <div class="d-flex justify-content-center gap-3 mt-3">
-      <a href="/product/<%= product.id %>" class="btn btn-sm btn-outline-dark">
+    <div class = "d-flex justify-content-center gap-3 mt-3">
+      <a href = "/product/<%= product.id %>" class = "btn btn-sm btn-outline-dark">
         Ver
       </a>
       <% if (user.id != product.user_id) { %>
