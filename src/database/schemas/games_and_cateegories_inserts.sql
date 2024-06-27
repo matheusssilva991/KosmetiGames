@@ -9,10 +9,6 @@ INSERT INTO game (name, enterprise) VALUES ('Overwatch 2', 'Blizzard Entertainme
 INSERT INTO game (name, enterprise) VALUES ('Overwatch', 'Blizzard Entertainment');
 INSERT INTO game (name, enterprise) VALUES ('Paladins', 'Hi Rez Studios');
 
-------------------------------------------------
-------------------------------------------------
-------------------------------------------------
-
 -- INSERTS FOR category TABLE
 
 INSERT INTO category (name) VALUES ('Skin');
