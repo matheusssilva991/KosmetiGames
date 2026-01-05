@@ -1,9 +1,35 @@
+/**
+ * Service de Produtos
+ *
+ * Gerencia a lógica de negócios relacionada aos produtos,
+ * incluindo validações, criação, atualização, exclusão e consultas.
+ *
+ * @author Matheus Santos Silva
+ */
+
 const userModel = require('../models/user.model');
 const productModel = require('../models/product.model');
 const categoryModel = require('../models/category.model');
 const gameModel = require('../models/game.model');
 
 class ProductService {
+  /**
+   * Cria um novo produto
+   *
+   * Valida os dados do produto (usuário, jogo, categoria, preço, estoque)
+   * e cria um novo registro no banco de dados.
+   *
+   * @param {Object} data - Dados do produto
+   * @param {number} data.user_id - ID do usuário vendedor
+   * @param {number} data.game_id - ID do jogo relacionado
+   * @param {number} data.category_id - ID da categoria
+   * @param {string} data.name - Nome do produto
+   * @param {string} data.description - Descrição do produto
+   * @param {number} data.price - Preço do produto
+   * @param {number} data.stock - Quantidade em estoque
+   * @param {string} data.image_path - Caminho da imagem
+   * @returns {Object} Produto criado ou objeto de erro
+   */
   async create(data) {
     // Check if the user exists
     if (!await userModel.findOne(data.user_id)) {
@@ -39,11 +65,28 @@ class ProductService {
     return await productModel.create(data);
   }
 
+  /**
+   * Busca todos os produtos
+   *
+   * @returns {Array} Lista de todos os produtos
+   */
   async findAll() {
     const products =  await productModel.findAll();
     return products;
   }
 
+  /**
+   * Busca produtos com filtros
+   *
+   * Permite filtrar produtos por jogo, categoria e termo de busca.
+   * Os filtros podem ser combinados.
+   *
+   * @param {Object} query - Filtros de busca
+   * @param {number} query.game - ID do jogo para filtrar
+   * @param {number} query.category - ID da categoria para filtrar
+   * @param {string} query.search - Termo de busca no nome do produto
+   * @returns {Array} Lista de produtos filtrados
+   */
   async findAllQuery(query) {
     let products = await productModel.findAll();
 

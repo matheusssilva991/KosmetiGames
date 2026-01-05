@@ -1,7 +1,28 @@
+/**
+ * Service de Usuários
+ *
+ * Gerencia a lógica de negócios relacionada aos usuários,
+ * incluindo validações, cadastro, atualização e consultas.
+ *
+ * @author Matheus Santos Silva
+ */
+
 const userModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
 
 class UserService {
+  /**
+   * Cria um novo usuário
+   *
+   * Valida os dados do usuário (e-mail, senha) e cria
+   * um novo registro no banco de dados com a senha criptografada.
+   *
+   * @param {Object} data - Dados do usuário
+   * @param {string} data.name - Nome do usuário
+   * @param {string} data.email - E-mail do usuário
+   * @param {string} data.password - Senha do usuário
+   * @returns {Object} Usuário criado ou objeto de erro
+   */
   async create(data) {
     // Check if the password has at least 6 characters
     if (data.password?.length < 6) {
@@ -27,6 +48,13 @@ class UserService {
     return await userModel.create(data);
   }
 
+  /**
+   * Busca todos os usuários
+   *
+   * Remove o campo password de cada usuário por segurança.
+   *
+   * @returns {Array} Lista de usuários sem o campo password
+   */
   async findAll() {
     const users = await userModel.findAll();
 
@@ -36,6 +64,14 @@ class UserService {
     return users;
   }
 
+  /**
+   * Busca um usuário específico por ID
+   *
+   * Remove o campo password do usuário por segurança.
+   *
+   * @param {number} id - ID do usuário
+   * @returns {Object} Dados do usuário sem password ou objeto de erro
+   */
   async findOne(id) {
     const user = await userModel.findOne(id);
 
@@ -47,6 +83,16 @@ class UserService {
     return user;
   }
 
+  /**
+   * Atualiza os dados de um usuário
+   *
+   * Valida os novos dados (senha, e-mail) e atualiza o registro.
+   * Se uma nova senha for fornecida, ela é criptografada.
+   *
+   * @param {number} id - ID do usuário
+   * @param {Object} data - Novos dados do usuário
+   * @returns {Object} Usuário atualizado ou objeto de erro
+   */
   async update(id, data) {
     const user = await this.findOne(id);
 

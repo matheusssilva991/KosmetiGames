@@ -1,6 +1,23 @@
+/**
+ * Model de Carrinho/Pedidos
+ *
+ * Responsável pelas operações de banco de dados relacionadas aos pedidos (orders)
+ * e itens do pedido (order_items). Gerencia o carrinho de compras e histórico.
+ *
+ * @author Matheus Santos Silva
+ */
+
 const connection = require('../database/connection');
 
 class CartModel {
+  /**
+   * Cria um novo pedido (carrinho) para o usuário
+   *
+   * @param {Object} data - Dados do pedido
+   * @param {string} data.status - Status do pedido ('open' ou 'closed')
+   * @param {number} data.user_id - ID do usuário
+   * @returns {Object} Pedido criado ou erro
+   */
   async create(data) {
     const { status, user_id } = data;
     const sql = `INSERT INTO \`order\` (status, user_id) VALUES ('${status}', '${user_id}')`;
@@ -12,6 +29,12 @@ class CartModel {
     }
   }
 
+  /**
+   * Finaliza um pedido alterando seu status para 'closed'
+   *
+   * @param {number} id - ID do pedido
+   * @returns {Object} Resultado da atualização ou erro
+   */
   async checkout(id) {
     const sql = `UPDATE \`order\` SET status = 'closed' WHERE id = ${id}`;
     try {
@@ -21,6 +44,15 @@ class CartModel {
     }
   }
 
+  /**
+   * Adiciona um item ao pedido
+   *
+   * @param {Object} data - Dados do item
+   * @param {number} data.order_id - ID do pedido
+   * @param {number} data.product_id - ID do produto
+   * @param {number} data.quantity - Quantidade do produto
+   * @returns {Object} Item criado ou erro
+   */
   async createOrderItem(data) {
     const { order_id, product_id, quantity } = data;
     const sql = `INSERT INTO order_item (order_id, product_id, quantity) VALUES

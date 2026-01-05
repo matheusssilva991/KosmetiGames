@@ -1,8 +1,27 @@
+/**
+ * Service de Carrinho de Compras
+ *
+ * Gerencia a lógica de negócios relacionada ao carrinho de compras,
+ * incluindo criação de pedidos, adição/remoção de produtos e finalização de compras.
+ *
+ * @author Matheus Santos Silva
+ */
+
 const cartModel = require('../models/cart.model');
 const userModel = require('../models/user.model');
 const productModel = require('../models/product.model');
 
 class CartService {
+  /**
+   * Cria um novo carrinho (pedido) para o usuário
+   *
+   * Verifica se o usuário existe e se já não possui um carrinho ativo.
+   *
+   * @param {Object} data - Dados do carrinho
+   * @param {number} data.user_id - ID do usuário
+   * @param {string} data.status - Status do pedido (default: 'open')
+   * @returns {Object} Carrinho criado ou objeto de erro
+   */
   async create(data) {
     const user = await userModel.findOne(data.user_id);
 
@@ -21,18 +40,39 @@ class CartService {
     return data;
   }
 
+  /**
+   * Finaliza a compra do carrinho
+   *
+   * Altera o status do pedido de 'open' para 'completed'.
+   *
+   * @param {number} cart_id - ID do carrinho/pedido
+   * @returns {Object} Pedido finalizado ou objeto de erro
+   */
   async checkout(cart_id) {
     const order = await cartModel.findOne(cart_id);
 
     if (!order) {
       return { error: 'Carrinho não encontrado.', status: 404 };
     }
-    
+
     await cartModel.checkout(order.id);
 
     return order;
   }
 
+  /**
+   * Adiciona um produto ao carrinho
+   *
+   * Verifica se o usuário e o produto existem.
+   * Se o usuário não tiver um carrinho ativo, cria um novo.
+   * Verifica se o produto já está no carrinho e valida estoque.
+   *
+   * @param {Object} data - Dados da adição
+   * @param {number} data.user_id - ID do usuário
+   * @param {number} data.product_id - ID do produto
+   * @param {number} data.quantity - Quantidade (default: 1)
+   * @returns {Object} Item adicionado ou objeto de erro
+   */
   async addProduct(data) {
     const user = await userModel.findOne(data.user_id);
     const product = await productModel.findOne(data.product_id);
