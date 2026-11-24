@@ -1,11 +1,13 @@
-FROM node:21-alpine
+FROM node:24-bookworm-slim
 
 WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-COPY package.json /app
+COPY src/ ./src/
+COPY public/ ./public/
+RUN mkdir -p public/images && chown node:node public/images
 
-RUN npm install
-
-COPY . /app
-
-CMD ["npm", "run", "start"]
+USER node
+EXPOSE 8080
+CMD ["npm", "start"]

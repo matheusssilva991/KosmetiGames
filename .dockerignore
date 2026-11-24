@@ -1,3 +1,5 @@
-**/node_modules
-.env.example
-README.MD
+node_modules
+.git
+.env
+.env.*
+public/images

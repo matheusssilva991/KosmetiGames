@@ -1,56 +1,27 @@
-<form class = "card" style = "width: 15rem; max-height: 370px; min-height: 370px;" method = "post"
-action = "/user/<%= user.id %>/cart/product/<%= product.id %>">
-  <img src = "<%= product.image_path %>" class = "card-img-top img-fluid p-2 border-bottom" alt = "<%= product.name %>"  style = "max-height: 210px;">
-  <div class = "card-body">
-    <h5 class = "card-title fs-6 text-body-secondary">
-      <small>
-        <%= product.name.substring(0, 30) %>
-      </small>
-      <small>
-        <%= product.name.length > 85 ? '...' : '' %>
-      </small>
-    </h5>
-    <div class = "card-text mt-2 d-flex align-items-center flex-wrap gap-3">
-      <section class = "fs-4 p-0">
-        <p class = "m-0">R&#36; <%= product.price.toFixed(2) %>
-        </p>
-      </section>
-      <small class = "text-primary">
-        30% OFF <i class = "bi bi-tag"></i>
-      </small>
-    </div>
-
-    <div class = "d-flex justify-content-center gap-3 mt-3">
-      <a href = "/product/<%= product.id %>" class = "btn btn-sm btn-outline-dark">
-        Ver
-      </a>
-      <% if (user.id != product.user_id) { %>
-        <% if (product.stock> 0) { %>
-          <% if (user && Object.values(user).length != 0) { %>
-            <button type="submit" class="btn btn-sm btn-dark">
-              <i class="bi bi-cart-plus"></i>
-              Carrinho
-            </button>
-          <% } else { %>
-            <a href="/login" class="btn btn-sm btn-dark">
-              <i class="bi bi-cart-plus
-            "></i>
-              Carrinho
-            </a>
-          <% } %>
-        <% } else { %>
-          <button class="btn btn-sm btn-dark" disabled>
-            <i class="bi bi-cart-plus
-          "></i>
-            Esgotado
+<article class="card" style="width: 15rem">
+  <div class="text-center border-bottom">
+    <%- include('../product-image.ejs', { product }) %>
+  </div>
+  <div class="card-body d-flex flex-column">
+    <h5 class="card-title fs-6 text-body-secondary"><%= product.name.length > 30 ? product.name.slice(0, 30) + '…' : product.name %></h5>
+    <p class="fs-4">R$ <%= formatPrice(product.price) %></p>
+    <div class="d-flex justify-content-center align-items-center gap-2 mt-auto">
+      <a href="/products/<%= product.id %>" class="btn btn-sm btn-outline-dark">Ver</a>
+      <% if (user?.id === product.user_id) { %>
+        <a href="/products/<%= product.id %>/edit" class="btn btn-sm btn-dark">Editar</a>
+      <% } else if (product.stock === 0) { %>
+        <span class="text-body-secondary">Esgotado</span>
+      <% } else if (user) { %>
+        <form action="/cart/items" method="post">
+          <%- include('../csrf.ejs') %>
+          <input type="hidden" name="productId" value="<%= product.id %>">
+          <button type="submit" class="btn btn-sm btn-dark">
+            <i class="bi bi-cart-plus"></i> Carrinho
           </button>
-        <% } %>
+        </form>
       <% } else { %>
-        <a href="/user/<%= user.id %>/product/<%= product.id %>/edit" class="btn btn-sm btn-dark">
-          <i class="bi bi-pencil"></i>
-          Editar
-        </a>
+        <a href="/login" class="btn btn-sm btn-dark">Entrar para comprar</a>
       <% } %>
     </div>
   </div>
-</form>
+</article>

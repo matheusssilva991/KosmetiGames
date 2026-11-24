@@ -1,7 +1,7 @@
-<%- await include('./components/head.ejs', {title: "Login"}) %>
+<%- include('./components/head.ejs', {title: "Login"}) %>
 
 <div class="d-flex flex-column min-vh-100">
-    <%- await include('./components/header.ejs') %>
+    <%- include('./components/header.ejs') %>
 
     <main class="container d-flex flex-column align-items-center w-75 mt-5 pt-4 flex-grow-1">
         <h1 class="h1">Bem vindo de volta!</h1>
@@ -14,6 +14,7 @@
 
         <form action="/login" method="post" class="container w-50 fs-6 mt-4 text-black-50 bg-white border
         p-4 rounded-2">
+            <%- include('./components/csrf.ejs') %>
             <div class="mb-4">
                 <label for="email" class="form-label">E-mail</label>
                 <input type="email" class="form-control text-black-50" value="<%= data.email %>"
@@ -22,7 +23,7 @@
 
             <div class="mb-5">
                 <label for="password" class="form-label">Senha</label>
-                <input type="password" id="password" class="form-control text-black-50" value="<%= data.password %>"
+                <input type="password" id="password" class="form-control text-black-50" autocomplete="current-password"
                 aria-describedby="password" placeholder="Digite sua senha" name="password" required>
             </div>
 
@@ -42,6 +43,7 @@
         </div>
     </main>
 
-    <%- await include('./components/footer.ejs') %>
+    <%- include('./components/footer.ejs') %>
 </div>
-
+</body>
+</html>

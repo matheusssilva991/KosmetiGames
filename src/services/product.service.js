@@ -1,203 +1,202 @@
-/**
- * Service de Produtos
- *
- * Gerencia a lógica de negócios relacionada aos produtos,
- * incluindo validações, criação, atualização, exclusão e consultas.
- *
- * @author Matheus Santos Silva
- */
+const products = require("../models/product.model");
+const games = require("../models/game.model");
+const categories = require("../models/category.model");
+const transaction = require("../database/transaction");
+const { detectImage, writeImage, removeImage } = require("../multer/multer");
+const { HttpError } = require("../lib/http");
+const {
+    readUInt,
+    requireId,
+    readText,
+    readPrice,
+} = require("../lib/validation");
 
-const userModel = require('../models/user.model');
-const productModel = require('../models/product.model');
-const categoryModel = require('../models/category.model');
-const gameModel = require('../models/game.model');
-
-class ProductService {
-  /**
-   * Cria um novo produto
-   *
-   * Valida os dados do produto (usuário, jogo, categoria, preço, estoque)
-   * e cria um novo registro no banco de dados.
-   *
-   * @param {Object} data - Dados do produto
-   * @param {number} data.user_id - ID do usuário vendedor
-   * @param {number} data.game_id - ID do jogo relacionado
-   * @param {number} data.category_id - ID da categoria
-   * @param {string} data.name - Nome do produto
-   * @param {string} data.description - Descrição do produto
-   * @param {number} data.price - Preço do produto
-   * @param {number} data.stock - Quantidade em estoque
-   * @param {string} data.image_path - Caminho da imagem
-   * @returns {Object} Produto criado ou objeto de erro
-   */
-  async create(data) {
-    // Check if the user exists
-    if (!await userModel.findOne(data.user_id)) {
-      return { error: { user: 'Usuário não existe.'}, status: 400, data };
+function catalogFilters(query) {
+    const filters = {};
+    for (const field of ["game", "category"]) {
+        if (query[field] != null && query[field] !== "") {
+            filters[field] = requireId(query[field]);
+        }
     }
-
-    // Check if the game exists
-    if (!await gameModel.findOne(data.game_id)) {
-      return { error: { game: 'Jogo não existe.' }, status: 400, data };
+    if (query.search != null) {
+        if (typeof query.search !== "string" || query.search.length > 255) {
+            throw new HttpError(400, "A busca deve conter até 255 caracteres.");
+        }
+        filters.search = query.search.trim();
     }
-
-    // Check if the category exists
-    if (!await categoryModel.findOne(data.category_id)) {
-      return { error: { category: 'Categoria não existe.' }, status: 400, data };
-    }
-
-    try {
-      data.price = parseFloat(data.price);
-    } catch (error) {
-      return { error: { price: 'O preço deve ser um número.' }, status: 400, data };
-    }
-
-    if (data.price < 0) {
-      return { error: { price: 'O preço não pode ser negativo.' }, status: 400, data };
-    }
-
-    if (data.stock < 0) {
-      return { error: { stock: 'O estoque não pode ser negativo.' }, status: 400, data };
-    }
-
-    data.description = data.description.trim().replace("\n", "");
-
-    return await productModel.create(data);
-  }
-
-  /**
-   * Busca todos os produtos
-   *
-   * @returns {Array} Lista de todos os produtos
-   */
-  async findAll() {
-    const products =  await productModel.findAll();
-    return products;
-  }
-
-  /**
-   * Busca produtos com filtros
-   *
-   * Permite filtrar produtos por jogo, categoria e termo de busca.
-   * Os filtros podem ser combinados.
-   *
-   * @param {Object} query - Filtros de busca
-   * @param {number} query.game - ID do jogo para filtrar
-   * @param {number} query.category - ID da categoria para filtrar
-   * @param {string} query.search - Termo de busca no nome do produto
-   * @returns {Array} Lista de produtos filtrados
-   */
-  async findAllQuery(query) {
-    let products = await productModel.findAll();
-
-    if (query.game) {
-      products = products.filter(product => product.game_id === parseInt(query.game));
-    }
-
-    if (query.category) {
-      products = products.filter(product => product.category_id === parseInt(query.category));
-    }
-
-    if (query.search) {
-      products = products.filter(product => product.name.toLowerCase().includes(query.search.toLowerCase()));
-    }
-
-    return products;
-  }
-
-  async findOne(id) {
-    const product = await productModel.findOne(id);
-
-    if (!product) {
-      return { error: { product: 'Produto não encontrado.' }, status: 404 };
-    }
-
-    return product;
-  }
-
-  async findReviews(id) {
-    return await productModel.findReviews(id);
-  }
-
-  async findByUserId(id) {
-    return await productModel.findByUserId(id);
-  }
-
-  async update(id, data) {
-    const product = await this.findOne(id);
-
-    data.description = data.description.trim().replace("\n", "");
-
-    if (product.error) {
-      return product;
-    }
-
-    // Check if the user exists
-    if (data.user_id && !await userModel.findOne(data.user_id)) {
-      return { error: { user: 'Usuário não existe.'}, status: 400, data };
-    }
-
-    // Check if the game exists
-    if (data.game_id && !await gameModel.findOne(data.game_id)) {
-      return { error: { game: 'Jogo não existe.' }, status: 400, data };
-    }
-
-    // Check if the category exists
-    if (data.category_id && !await categoryModel.findOne(data.category_id)) {
-      return { error: { category: 'Categoria não existe.' }, status: 400, data };
-    }
-
-    if (data.price) {
-      try {
-        data.price = parseFloat(data.price);
-      } catch (error) {
-        return { error: { price: 'O preço deve ser um número.' }, status: 400, data };
-      }
-
-      if (data.price < 0) {
-        return { error: { price: 'O preço não pode ser negativo.' }, status: 400, data };
-      }
-    }
-
-    if (data.stock && data.stock < 0) {
-      return { error: { stock: 'O estoque não pode ser negativo.' }, status: 400, data };
-    }
-
-    if (data.image_path && product.image_path !== data.image_path) {
-      try {
-        const fs = require('fs');
-        const path = require('path');
-        const imagePath = path.join(__dirname, '../../public' + product.image_path)
-        fs.unlinkSync(imagePath);
-      }
-      catch (error) {
-        return { error: {image: 'Erro ao remover a imagem antiga.'}, status: 500 };
-      }
-    } else {
-      data.image_path = product.image_path;
-    }
-
-    return await productModel.update(id, data);
-  }
-
-  async remove(id) {
-    const product = await this.findOne(id);
-
-    if (product.error) {
-      return product;
-    }
-
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const imagePath = path.join(__dirname, '../../public' + product.image_path);
-      fs.unlinkSync(imagePath);
-      return await productModel.remove(id);
-    } catch (error) {
-      return { error: 'Erro ao remover a imagem.', status: 500 };
-    }
-  }
+    return filters;
 }
 
+function findCatalog(filters) {
+    return products.findAll({
+        gameId: filters.game,
+        categoryId: filters.category,
+        search: filters.search,
+    });
+}
 
-module.exports = new ProductService();
+async function findOptions() {
+    const [gameOptions, categoryOptions] = await Promise.all([
+        games.findAll(),
+        categories.findAll(),
+    ]);
+    return { games: gameOptions, categories: categoryOptions };
+}
+
+async function findOne(id) {
+    const product = await products.findOne(id);
+    if (!product) {
+        throw new HttpError(404, "Produto não encontrado.");
+    }
+    return product;
+}
+
+function requireOwner(product, ownerId) {
+    if (product.user_id !== ownerId) {
+        throw new HttpError(
+            403,
+            "Você não tem permissão para gerenciar este produto.",
+        );
+    }
+}
+
+async function findOwned(id, ownerId) {
+    const product = await findOne(id);
+    requireOwner(product, ownerId);
+    return product;
+}
+
+async function releaseImage(imagePath) {
+    if (!imagePath) {
+        return;
+    }
+    try {
+        if (!(await products.imageIsReferenced(imagePath))) {
+            await removeImage(imagePath);
+        }
+    } catch (error) {
+        console.error("Falha ao liberar imagem de produto.", error.code);
+    }
+}
+
+async function save(ownerId, body, file, current) {
+    const data = {
+        id: current?.id,
+        version: current?.version,
+        name: readText(body?.name),
+        description: readText(body?.description),
+        price: readText(body?.price),
+        stock: readText(body?.stock),
+        game_id: readUInt(body?.game_id),
+        category_id: readUInt(body?.category_id),
+    };
+    const price = readPrice(data.price);
+    const stock = readUInt(data.stock, 0);
+    const version = current ? readUInt(body?.version, 0) : null;
+    const extension = file ? detectImage(file.buffer) : null;
+    const options = await findOptions();
+    const errors = [];
+    if (!data.name || data.name.length > 255) {
+        errors.push("Informe um nome de até 255 caracteres.");
+    }
+    if (!data.description || data.description.length > 8000) {
+        errors.push("Informe uma descrição de até 8.000 caracteres.");
+    }
+    if (price === null) {
+        errors.push(
+            "Informe um preço não negativo com até duas casas decimais.",
+        );
+    }
+    if (stock === null) {
+        errors.push("Informe um estoque inteiro entre 0 e 4.294.967.295.");
+    }
+    if (!options.games.some((game) => game.id === data.game_id)) {
+        errors.push("Selecione um jogo válido.");
+    }
+    if (
+        !options.categories.some((category) => category.id === data.category_id)
+    ) {
+        errors.push("Selecione uma categoria válida.");
+    }
+    if ((!current && !file) || (file && !extension)) {
+        errors.push("Envie uma imagem JPEG, PNG ou WebP.");
+    }
+    if (current && version === null) {
+        errors.push("Reabra o formulário para editar o produto.");
+    }
+    if (errors.length) {
+        // A nova submissão deve continuar usando a versão que o vendedor editou.
+        return { data: { ...data, version }, errors, ...options };
+    }
+
+    const imagePath = file ? await writeImage(file, extension) : null;
+    const fields = {
+        ...data,
+        price,
+        stock,
+        image_path: imagePath,
+        user_id: ownerId,
+    };
+    try {
+        if (!current) {
+            return { id: await products.create(fields) };
+        }
+
+        const oldImage = await transaction(async (connection) => {
+            const product = await products.lock(connection, current.id);
+            if (!product || product.archived_at) {
+                throw new HttpError(404, "Produto não encontrado.");
+            }
+            requireOwner(product, ownerId);
+            fields.image_path = imagePath ?? product.image_path;
+
+            if (
+                !(await products.update(
+                    connection,
+                    current.id,
+                    ownerId,
+                    version,
+                    fields,
+                ))
+            ) {
+                throw new HttpError(
+                    409,
+                    "O produto mudou desde que você abriu o formulário. Reabra a página e revise os dados.",
+                );
+            }
+            return product.image_path;
+        });
+
+        if (imagePath) {
+            await releaseImage(oldImage);
+        }
+        return { id: current.id };
+    } catch (error) {
+        await releaseImage(imagePath);
+        throw error;
+    }
+}
+
+async function archive(id, ownerId) {
+    const imagePath = await transaction(async (connection) => {
+        const product = await products.lock(connection, id);
+        if (!product || product.archived_at) {
+            throw new HttpError(404, "Produto não encontrado.");
+        }
+        requireOwner(product, ownerId);
+        await products.archive(connection, id, ownerId);
+        return product.image_path;
+    });
+    await releaseImage(imagePath);
+}
+
+module.exports = {
+    catalogFilters,
+    findCatalog,
+    findOptions,
+    findOne,
+    findOwned,
+    save,
+    archive,
+    findByOwner: (ownerId) => products.findAll({ ownerId }),
+};

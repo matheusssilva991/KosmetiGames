@@ -1,11 +1,14 @@
-<%- await include('./components/head.ejs', {title: "Home"}) %>
+<%- include('./components/head.ejs', {title: "Home"}) %>
 
 <div class="d-flex flex-column min-vh-100">
-    <%- await include('./components/header.ejs') %>
+    <%- include('./components/header.ejs') %>
 
-    <form class="d-flex input-group mx-auto mt-4" role="search">
-        <input type="text" class="form-control border-0" placeholder="Search" aria-label="Search"
-        aria-describedby="search-icon" id="header-form-input" name="search">
+    <form action="/products" method="get" class="d-flex input-group mx-auto mt-4" role="search">
+        <% for (const key of ['game', 'category']) { %>
+            <% if (filters[key]) { %><input type="hidden" name="<%= key %>" value="<%= filters[key] %>"><% } %>
+        <% } %>
+        <input type="text" class="form-control border-0" placeholder="Buscar produtos" aria-label="Buscar produtos"
+        aria-describedby="search-icon" id="header-form-input" name="search" value="<%= filters.search %>" maxlength="255">
         <button class="btn btn-light btn-sm" type="submit" id="search-icon">
             <i class="bi bi-search"></i>
         </button>
@@ -13,7 +16,7 @@
 
     <main class = "container-fluid flex-grow-1 mt-5 px-4 d-flex justify-content-between">
 
-        <%- await include('./components/sidebar.ejs') %>
+        <%- include('./components/sidebar.ejs') %>
 
         <div class="main-content w-100 d-flex mb-5 gap-3 ms-5 flex-wrap
         justify-content-center" style="height: fit-content;">
@@ -23,11 +26,12 @@
                 </div>
             <% } %>
             <% for( let i = 0; i < products.length; i++ ) { %>
-                <%- await include('./components/card/product-card.ejs', {product: products[i]}) %>
+                <%- include('./components/card/product-card.ejs', {product: products[i]}) %>
             <% } %>
         </div>
     </main>
 
-    <%- await include('./components/footer.ejs') %>
+    <%- include('./components/footer.ejs') %>
 </div>
-
+</body>
+</html>

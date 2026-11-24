@@ -1,167 +1,140 @@
-/**
- * Service de Carrinho de Compras
- *
- * Gerencia a lógica de negócios relacionada ao carrinho de compras,
- * incluindo criação de pedidos, adição/remoção de produtos e finalização de compras.
- *
- * @author Matheus Santos Silva
- */
+const carts = require("../models/cart.model");
+const products = require("../models/product.model");
+const transaction = require("../database/transaction");
+const { HttpError } = require("../lib/http");
+const { readUInt, requireId, priceInCents } = require("../lib/validation");
 
-const cartModel = require('../models/cart.model');
-const userModel = require('../models/user.model');
-const productModel = require('../models/product.model');
-
-class CartService {
-  /**
-   * Cria um novo carrinho (pedido) para o usuário
-   *
-   * Verifica se o usuário existe e se já não possui um carrinho ativo.
-   *
-   * @param {Object} data - Dados do carrinho
-   * @param {number} data.user_id - ID do usuário
-   * @param {string} data.status - Status do pedido (default: 'open')
-   * @returns {Object} Carrinho criado ou objeto de erro
-   */
-  async create(data) {
-    const user = await userModel.findOne(data.user_id);
-
-    if (!user) {
-      return { error: 'Usuário não encontrado.', status: 400 };
-    }
-
-    const order = await cartModel.findActiveOrder(data.user_id);
-
-    if (order) {
-      return { error: 'Carrinho já existe.', status: 400 };
-    }
-
-    await cartModel.create(data);
-
-    return data;
-  }
-
-  /**
-   * Finaliza a compra do carrinho
-   *
-   * Altera o status do pedido de 'open' para 'completed'.
-   *
-   * @param {number} cart_id - ID do carrinho/pedido
-   * @returns {Object} Pedido finalizado ou objeto de erro
-   */
-  async checkout(cart_id) {
-    const order = await cartModel.findOne(cart_id);
-
-    if (!order) {
-      return { error: 'Carrinho não encontrado.', status: 404 };
-    }
-
-    await cartModel.checkout(order.id);
-
-    return order;
-  }
-
-  /**
-   * Adiciona um produto ao carrinho
-   *
-   * Verifica se o usuário e o produto existem.
-   * Se o usuário não tiver um carrinho ativo, cria um novo.
-   * Verifica se o produto já está no carrinho e valida estoque.
-   *
-   * @param {Object} data - Dados da adição
-   * @param {number} data.user_id - ID do usuário
-   * @param {number} data.product_id - ID do produto
-   * @param {number} data.quantity - Quantidade (default: 1)
-   * @returns {Object} Item adicionado ou objeto de erro
-   */
-  async addProduct(data) {
-    const user = await userModel.findOne(data.user_id);
-    const product = await productModel.findOne(data.product_id);
-
-    if (!user) {
-      return { error: 'Usuário não encontrado.', status: 400 };
-    }
-
-    if (!product) {
-      return { error: 'Produto não encontrado.', status: 400 };
-    }
-
-    let order = await cartModel.findActiveOrder(data.user_id);
-
-    if (!order) {
-      await cartModel.create({ status: 'open', user_id: data.user_id });
-      order = await cartModel.findActiveOrder(data.user_id);
-    }
-
-    data.order_id = order.id;
-
-    const productsInCart = await cartModel.findProductsInOrder(data.order_id);
-    const productInCart = productsInCart.filter(product => product.id == data.product_id);
-
-    let order_item_data = {};
-
-    if (productInCart.length == 0) {
-      if (!data.quantity) {
-        data.quantity = 1;
-      }
-
-      if (product.stock < data.quantity) {
-        return { error: 'Produto sem estoque.', status: 400 };
-      }
-
-      order_item_data = await cartModel.createOrderItem(data);
-    }
-
-    return {...data, ...order_item_data};
-  }
-
-  async findOne(id) {
-    const cart = await cartModel.findOne(id);
-
-    if (!cart) {
-      return { error: 'Carrinho não encontrado.' , status: 404 };
-    }
-
-    return cart;
-  }
-
-  async findActiveOrder(user_id) {
-    const order = await cartModel.findActiveOrder(user_id);
-
-    if (!order) {
-      return { error: 'Carrinho não encontrado.' , status: 404 };
-    }
-
-    return order;
-  }
-
-  async findInativeOrders(user_id) {
-    const orders = await cartModel.findInativeOrders(user_id);
-
-    return orders;
-  }
-
-  async findProductsInOrder(order_id) {
-    const products = await cartModel.findProductsInOrder(order_id);
-
-    return products;
-  }
-
-  async findPurchasedProducts(user_id) {
-    const products = await cartModel.findPurchasedProducts(user_id);
-
-    return products;
-  }
-
-  async removeProduct(order_id, product_id) {
-    const result = await cartModel.removeProduct(order_id, product_id);
-
-    if (!result) {
-      return { error: 'Produto não encontrado.', status: 404 };
-    }
-
-    return result;
-  }
-
+async function forBuyer(userId, work) {
+    return transaction(async (connection) => {
+        // Cart writes for one buyer are serialized before reading or creating their order.
+        if (!(await carts.lockBuyer(connection, userId))) {
+            throw new HttpError(404, "Conta não encontrada.");
+        }
+        return work(connection);
+    });
 }
 
-module.exports = new CartService();
+async function findCart(userId) {
+    const cart = await carts.findCart(userId);
+    const total = cart.items.reduce((sum, item) => {
+        return item.archived_at
+            ? sum
+            : sum + priceInCents(item.price) * BigInt(item.quantity);
+    }, 0n);
+    return { ...cart, total };
+}
+
+async function addItem(userId, body) {
+    const productId = requireId(body?.productId);
+    const submittedQuantity = body?.quantity;
+    const quantity =
+        submittedQuantity == null || submittedQuantity === ""
+            ? 1
+            : readUInt(submittedQuantity);
+    if (quantity === null) {
+        throw new HttpError(
+            422,
+            "Informe uma quantidade inteira maior que zero.",
+        );
+    }
+
+    return forBuyer(userId, async (connection) => {
+        const product = await products.lock(connection, productId);
+        if (!product || product.archived_at) {
+            throw new HttpError(404, "Produto indisponível.");
+        }
+        if (product.user_id === userId) {
+            throw new HttpError(
+                403,
+                "Você não pode comprar um produto que cadastrou.",
+            );
+        }
+
+        const order = await carts.findOpenOrder(connection, userId);
+        const existing = order
+            ? await carts.findQuantity(connection, order.id, productId)
+            : 0;
+        if (quantity + existing > product.stock) {
+            throw new HttpError(
+                409,
+                "A quantidade solicitada excede o estoque disponível.",
+            );
+        }
+        const orderId =
+            order?.id ?? (await carts.createOrder(connection, userId));
+        await carts.saveItem(
+            connection,
+            orderId,
+            productId,
+            quantity + existing,
+            existing,
+        );
+    });
+}
+
+async function removeItem(userId, itemId) {
+    return forBuyer(userId, async (connection) => {
+        const order = await carts.findOpenOrder(connection, userId);
+        if (!order || !(await carts.removeItem(connection, order.id, itemId))) {
+            throw new HttpError(404, "Item não encontrado no carrinho.");
+        }
+    });
+}
+
+async function checkout(userId, orderId) {
+    return forBuyer(userId, async (connection) => {
+        const order = await carts.findOrder(connection, userId, orderId);
+        if (!order) {
+            throw new HttpError(404, "Carrinho não encontrado.");
+        }
+        if (order.status === "closed") {
+            return;
+        }
+        if (order.status !== "open") {
+            throw new HttpError(409, "O carrinho não está aberto.");
+        }
+
+        const items = await carts.findItems(connection, orderId);
+        if (!items.length) {
+            throw new HttpError(
+                409,
+                "Adicione um produto antes de finalizar a compra.",
+            );
+        }
+
+        const purchases = [];
+        for (const item of items) {
+            const product = await products.lock(connection, item.product_id);
+            if (!product || product.archived_at) {
+                throw new HttpError(
+                    409,
+                    "Remova os produtos indisponíveis do carrinho antes de finalizar.",
+                );
+            }
+            if (
+                product.user_id === userId ||
+                item.quantity < 1 ||
+                product.stock < item.quantity
+            ) {
+                throw new HttpError(
+                    409,
+                    `Não foi possível comprar a quantidade solicitada de ${product.name}.`,
+                );
+            }
+            purchases.push({ item, product });
+        }
+
+        for (const { item, product } of purchases) {
+            await carts.recordPurchase(connection, item, product);
+        }
+        await carts.closeOrder(connection, orderId);
+    });
+}
+
+module.exports = {
+    findCart,
+    addItem,
+    removeItem,
+    checkout,
+    findPurchases: carts.findPurchases,
+};

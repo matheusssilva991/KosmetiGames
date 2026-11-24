@@ -1,65 +1,34 @@
-/**
- * Controller de Autenticação
- *
- * Gerencia as rotas relacionadas à autenticação de usuários,
- * incluindo login e logout.
- *
- * @author Matheus Santos Silva
- */
+const { promisify } = require("node:util");
+const auth = require("../services/auth.service");
+const { readText } = require("../lib/validation");
 
-const express = require('express');
-const router = express.Router();
-const ejs = require('ejs');
-const jsonwebtoken = require('jsonwebtoken');
+function showLogin(req, res) {
+    res.render("login", { error: null, data: {} });
+}
 
-const authMiddleware = require('../middlewares/auth.middleware');
-const authenticateService = require('../services/auth.service');
+async function login(req, res) {
+    const user = await auth.login(req.body);
+    if (!user) {
+        return res.status(401).render("login", {
+            error: "E-mail e/ou senha incorretos.",
+            data: { email: readText(req.body?.email) },
+        });
+    }
 
-/**
- * GET /login
- * Exibe a página de login
- *
- * @middleware unauth - Verifica se o usuário NÃO está autenticado
- * @returns {HTML} Página de login renderizada
- */
-router.get('/login', authMiddleware.unauth, async (req, res) => {
-  const html = await ejs.renderFile('./src/views/login.ejs', {error: null, data: {}, user: null }, { async: true})
-  res.send(html);
-});
+    await promisify(req.session.regenerate.bind(req.session))();
+    req.session.user = user;
+    await promisify(req.session.save.bind(req.session))();
+    return res.redirect(303, "/products");
+}
 
-/**
- * POST /login
- * Processa a autenticação do usuário
- *
- * @middleware unauth - Verifica se o usuário NÃO está autenticado
- * @body {string} email - E-mail do usuário
- * @body {string} password - Senha do usuário
- * @returns {Redirect|HTML} Redireciona para home se sucesso, ou exibe erros
- */
-router.post('/login', authMiddleware.unauth, async (req, res) => {
-  const result = await authenticateService.login(req.body);
+async function logout(req, res) {
+    await promisify(req.session.destroy.bind(req.session))();
+    res.clearCookie("kosmetigames.sid", {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: req.app.get("secure session cookie"),
+    });
+    res.redirect(303, "/products");
+}
 
-  if (result.token) {
-    const decoded = jsonwebtoken.decode(result.token);
-    req.session.user = decoded;
-    res.redirect('/')
-  } else {
-    const html = await ejs.renderFile('./src/views/login.ejs',
-    { error: result.error, data: result.data, user: null }, { async: true });
-    res.send(html);
-  }
-});
-
-/**
- * GET /logout
- * Realiza o logout do usuário destruindo a sessão
- *
- * @middleware auth - Verifica se o usuário está autenticado
- * @returns {Redirect} Redireciona para a página inicial
- */
-router.get('/logout', authMiddleware.auth, async (req, res) => {
-  req.session.destroy();
-  res.redirect('/');
-});
-
-module.exports = router;
+module.exports = { showLogin, login, logout };

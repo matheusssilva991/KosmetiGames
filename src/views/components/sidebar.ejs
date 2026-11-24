@@ -2,11 +2,13 @@
   mx-0 pt-3 mb-5 align-items-start bg-white" style="height: fit-content; width: 250px;">
   <h3 class="align-self-center mb-2">Filtros</h3>
 
-  <form class="nav flex-column ps-2" action="/" method="get">
+  <form class="nav flex-column ps-2" action="/products" method="get">
+    <% if (filters.search) { %><input type="hidden" name="search" value="<%= filters.search %>"><% } %>
     <button type="submit" class="btn btn-sm btn-dark d-flex justify-content-center gap-2 mb-1 mt-3 align-self-start">
       <i class="bi bi-search"></i>
         Filtrar
     </button>
+    <a href="/products" class="small mb-2">Limpar filtros</a>
 
     <section class="nav-item mb-3">
       <header class="text-left">
@@ -16,7 +18,7 @@
         <% for( let i=0; i < games.length; i++ ) { %>
           <div class="form-check">
             <input class="form-check-input rounded-1" type="radio" value="<%= games[i].id %>"
-              id="flexCheckChecked<%= games[i].id %>" name="game" />
+              id="flexCheckChecked<%= games[i].id %>" name="game" <%= filters.game === games[i].id ? "checked" : "" %> />
             <label class="form-check-label small-font-size" for="flexCheckChecked<%= games[i].id %>">
               <%= games[i].name %>
             </label>
@@ -32,7 +34,7 @@
         <% for( let i=0; i < categories.length; i++ ) { %>
           <div class="form-check">
             <input class="form-check-input rounded-1" type="radio" value="<%= categories[i].id %>"
-              id="flexCheckCheckedx<%= categories[i].id %>" name="category" />
+              id="flexCheckCheckedx<%= categories[i].id %>" name="category" <%= filters.category === categories[i].id ? "checked" : "" %> />
             <label class="form-check-label small-font-size" for="flexCheckCheckedx<%= categories[i].id %>">
               <%= categories[i].name %>
             </label>

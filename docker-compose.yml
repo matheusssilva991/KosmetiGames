@@ -1,31 +1,49 @@
 services:
-  app:
-    build: .
-    container_name: ecommerce-app
-    ports:
-      - "8080:8080"
-    expose:
-      - "8080"
-    depends_on:
-      - db
-    env_file:
-      - .env
+    app:
+        build: .
+        ports:
+            - "${APP_HOST_PORT:-8080}:8080"
+        depends_on:
+            db:
+                condition: service_healthy
+        environment:
+            PORT: 8080
+            MYSQL_HOST: db
+            MYSQL_PORT: 3306
+            MYSQL_DATABASE: ${MYSQL_DATABASE:?defina MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER:?defina MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD:?defina MYSQL_PASSWORD}
+            SESSION_SECRET: ${SESSION_SECRET:?defina SESSION_SECRET}
+            SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+            TRUST_PROXY: ${TRUST_PROXY:-false}
+        volumes:
+            - product_images:/app/public/images
 
-  db:
-    image: mysql:8.0
-    container_name: ecommerce-db
-    restart: always
-    expose:
-      - "3306"
-    ports:
-      - "3307:3306"
-    env_file:
-      - .env
-    volumes:
-      - db_data:/var/lib/mysql
-      - ./src/database/schemas:/docker-entrypoint-initdb.d
+    db:
+        image: mysql:8.0
+        restart: always
+        ports:
+            - "127.0.0.1:${MYSQL_HOST_PORT:-3307}:3306"
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE:?defina MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER:?defina MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD:?defina MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?defina MYSQL_ROOT_PASSWORD}
+        volumes:
+            - db_data:/var/lib/mysql
+            - ./src/database/schemas/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+            - ./src/database/schemas/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mysqladmin ping --protocol=tcp -h 127.0.0.1 --silent",
+                ]
+            interval: 3s
+            timeout: 3s
+            retries: 20
+            start_period: 10s
 
 volumes:
-  db_data:
-
-
+    db_data:
+    product_images:

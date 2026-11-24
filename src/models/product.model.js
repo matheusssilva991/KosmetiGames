@@ -1,152 +1,115 @@
-/**
- * Model de Produtos
- *
- * Responsável pelas operações de banco de dados relacionadas aos produtos.
- * Realiza operações CRUD na tabela product e consultas relacionadas.
- *
- * @author Matheus Santos Silva
- */
+const pool = require("../database/connection");
 
-const connection = require('../database/connection');
+const selectProduct = `
+  SELECT p.id, p.name, p.description, p.price, p.stock, p.image_path, p.user_id,
+         p.game_id, p.category_id, p.version, g.enterprise AS game_enterprise,
+         g.name AS game_name, c.name AS category_name
+  FROM product AS p
+  INNER JOIN game AS g ON g.id = p.game_id
+  INNER JOIN category AS c ON c.id = p.category_id
+  WHERE p.archived_at IS NULL
+`;
 
-class ProductModel {
-  /**
-   * Cria um novo produto no banco de dados
-   *
-   * @param {Object} data - Dados do produto
-   * @param {string} data.name - Nome do produto
-   * @param {string} data.description - Descrição do produto
-   * @param {number} data.price - Preço do produto
-   * @param {number} data.stock - Quantidade em estoque
-   * @param {string} data.image_path - Caminho da imagem do produto
-   * @param {number} data.user_id - ID do vendedor
-   * @param {number} data.category_id - ID da categoria
-   * @param {number} data.game_id - ID do jogo relacionado
-   * @returns {Object} Resultado da inserção ou erro
-   */
-  async create(data) {
-    const { name, description, price, stock, image_path, user_id, category_id, game_id } = data;
-    const sql = `INSERT INTO product (name, description, price, stock, image_path, user_id, category_id, game_id)
-    VALUES ('${name}', '${description}', '${price}', '${stock}', '${image_path}', '${user_id}',
-     '${category_id}', '${game_id}')`;
-    try {
-      return await connection.execute(sql);
-    } catch (error) {
-      return error;
+async function findAll({ ownerId, gameId, categoryId, search } = {}) {
+    const conditions = [];
+    const params = [];
+    for (const [predicate, value] of [
+        ["p.user_id = ?", ownerId],
+        ["p.game_id = ?", gameId],
+        ["p.category_id = ?", categoryId],
+        ["LOCATE(LOWER(?), LOWER(p.name)) > 0", search],
+    ]) {
+        if (value != null && value !== "") {
+            conditions.push(predicate);
+            params.push(value);
+        }
     }
-  }
-
-  /**
-   * Busca todos os produtos com informações de categoria e jogo
-   *
-   * Realiza JOIN com as tabelas category e game para trazer
-   * informações completas dos produtos.
-   *
-   * @returns {Array} Lista de produtos com categoria e jogo ou erro
-   */
-  async findAll() {
-    const sql = `SELECT product.id, product.name, description, price, stock, image_path,
-    category.name as category_name, game.name as game_name, game.enterprise as game_enterprise,
-    user_id, category_id, game_id FROM product INNER JOIN category on category.id = product.category_id
-    INNER JOIN game on game.id = product.game_id`;
-    try {
-      const [products] = await connection.execute(sql);
-      return products;
-    } catch (error) {
-      return error;
-    }
-  }
-
-  /**
-   * Busca um produto específico por ID
-   *
-   * Realiza JOIN com as tabelas category e game.
-   *
-   * @param {number} id - ID do produto
-   * @returns {Object} Dados do produto com categoria e jogo ou undefined
-   */
-  async findOne(id) {
-    const sql = `SELECT product.id, product.name, description, price, stock, image_path, category.name as
-    category_name, game.name as game_name, game.enterprise as game_enterprise, user_id, category_id, game_id
-    FROM product INNER JOIN category on category.id = product.category_id
-    INNER JOIN game on game.id = product.game_id WHERE product.id = ${id}`;
-    try {
-      const [product] = await connection.execute(sql);
-      return product[0];
-    } catch (error) {
-      return error;
-    }
-  }
-
-  /**
-   * Busca as avaliações de um produto
-   *
-   * @param {number} id - ID do produto
-   * @returns {Array} Lista de avaliações com dados do usuário ou erro
-   */
-  async findReviews(id) {
-    const sql = `SELECT * FROM review INNER JOIN user ON review.user_id = user.id WHERE product_id = ${id}`;
-    try {
-      const [reviews] = await connection.execute(sql);
-      return reviews;
-    } catch (error) {
-      return error;
-    }
-  }
-
-  /**
-   * Busca todos os produtos de um usuário específico
-   *
-   * @param {number} id - ID do usuário
-   * @returns {Array} Lista de produtos do usuário ou erro
-   */
-  async findByUserId(id) {
-    const sql = `SELECT product.id, product.name, description, price, stock, image_path, category.name as
-    category_name, game.name as game_name, game.enterprise as game_enterprise, user_id, category_id, game_id
-    FROM product INNER JOIN category on category.id = product.category_id
-    INNER JOIN game on game.id = product.game_id WHERE user_id = ${id}`;
-    try {
-      const [products] = await connection.execute(sql);
-      return products;
-    } catch (error) {
-      return error;
-    }
-  }
-
-  /**
-   * Atualiza os dados de um produto
-   *
-   * @param {number} id - ID do produto
-   * @param {Object} data - Novos dados do produto
-   * @returns {Object} Resultado da atualização ou erro
-   */
-  async update(id, data) {
-    const { name, description, price, stock, image_path, user_id, category_id, game_id } = data;
-    const sql = `UPDATE product SET name = '${name}', description = '${description}', price = '${price}',
-    stock = '${stock}', image_path = '${image_path}', user_id = '${user_id}', category_id = '${category_id}',
-    game_id = '${game_id}' WHERE id = ${id}`;
-    try {
-      return await connection.execute(sql);
-    } catch (error) {
-      return error;
-    }
-  }
-
-  /**
-   * Remove um produto do banco de dados
-   *
-   * @param {number} id - ID do produto
-   * @returns {Object} Resultado da exclusão ou erro
-   */
-  async remove(id) {
-    const sql = `DELETE FROM product WHERE id = ${id}`;
-    try {
-      return await connection.execute(sql);
-    } catch (error) {
-      return error;
-    }
-  }
+    const where = conditions.length ? " AND " + conditions.join(" AND ") : "";
+    const [rows] = await pool.execute(
+        selectProduct + where + " ORDER BY p.id DESC",
+        params,
+    );
+    return rows;
 }
 
+async function findOne(id) {
+    const [rows] = await pool.execute(selectProduct + " AND p.id = ?", [id]);
+    return rows[0];
+}
 
-module.exports = new ProductModel();
+async function create(data) {
+    const [result] = await pool.execute(
+        `INSERT INTO product (name, description, price, stock, image_path, user_id, category_id, game_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+            data.name,
+            data.description,
+            data.price,
+            data.stock,
+            data.image_path,
+            data.user_id,
+            data.category_id,
+            data.game_id,
+        ],
+    );
+    return result.insertId;
+}
+
+async function update(connection, productId, ownerId, version, data) {
+    const [result] = await connection.execute(
+        `UPDATE product
+     SET name = ?, description = ?, price = ?, stock = ?, image_path = ?, category_id = ?,
+         game_id = ?, version = version + 1
+     WHERE id = ? AND user_id = ? AND version = ? AND archived_at IS NULL`,
+        [
+            data.name,
+            data.description,
+            data.price,
+            data.stock,
+            data.image_path,
+            data.category_id,
+            data.game_id,
+            productId,
+            ownerId,
+            version,
+        ],
+    );
+    return result.affectedRows;
+}
+
+async function archive(connection, productId, ownerId) {
+    await connection.execute(
+        "UPDATE product SET archived_at = CURRENT_TIMESTAMP, image_path = NULL WHERE id = ? AND user_id = ?",
+        [productId, ownerId],
+    );
+}
+
+async function lock(connection, id) {
+    const [rows] = await connection.execute(
+        `SELECT p.id, p.user_id, p.name, p.description, p.price, p.image_path, p.stock, p.archived_at,
+            (SELECT name FROM game WHERE id = p.game_id) AS game_name,
+            (SELECT name FROM category WHERE id = p.category_id) AS category_name
+     FROM product AS p WHERE p.id = ? FOR UPDATE`,
+        [id],
+    );
+    return rows[0];
+}
+
+async function imageIsReferenced(imagePath) {
+    const [rows] = await pool.execute(
+        `SELECT 1 FROM product WHERE image_path = ?
+     UNION ALL SELECT 1 FROM order_item WHERE snapshot_image_path = ? LIMIT 1`,
+        [imagePath, imagePath],
+    );
+    return rows.length > 0;
+}
+
+module.exports = {
+    findAll,
+    findOne,
+    create,
+    update,
+    archive,
+    lock,
+    imageIsReferenced,
+};

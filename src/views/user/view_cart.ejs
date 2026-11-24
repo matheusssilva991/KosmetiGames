@@ -1,146 +1,49 @@
-<%- await include('../components/head.ejs', {title: "Produtos do usuário" }) %>
-
-<div class="d-flex flex-column min-vh-100 w-100">
-  <%- await include('../components/header.ejs') %>
-
-  <main
-    class="container w-75 d-flex flex-column align-items-start mt-3 pt-4 flex-grow-1 mb-5"
-  >
-    <h1 class="">Carrinho</h1>
-
-    <% if (products.length == 0) { %>
-      <div class="alert alert-info w-100 mt-4 p-1" role="alert">
-        Nenhum produto adicionado ao carrinho.
-      </div>
-    <% } %>
-
-    <% if (products.length > 0) { %>
-      <form action="/user/<%=user.id%>/cart/checkout" method="post"
-        class="align-self-end mb-3 bg-white p-2 d-flex align-items-center">
-        <strong>Total R$: </strong> <%= products.reduce((sum, product) => {
-          return sum + product.price;
-        }, 0).toFixed(2) %>
-
-        <button type="submit" class="btn btn-dark ms-4">
-          Finalizar compra
-        </button>
-      </form>
-    <% } %>
-
-
-    <% for( let i=0; i < products.length; i++ ) { %>
-      <div class="card mt-1 mb-2 w-100">
-        <div class="row g-0">
-          <div
-            class="col col-lg-2 d-flex align-items-center border-end justify-content-center"
-          >
-            <img
-              src="<%= products[i].image_path %>"
-              class="img-fluid rounded-start p-1"
-              alt="<%= products[i].name %>"
-              style="width: 200px"
-            />
-          </div>
-
-          <div class="col d-flex justify-content-between">
-            <div class="card-body d-flex flex-column justify-content-between">
-              <h5 class="card-title"><%= products[i].name %></h5>
-              <small class="card-text text-muted">
-                  <%= products[i].description.substring(0, 300) %>
-              </small>
-              <small class="card-text text-muted">
-                <%= products[i].description.length > 300 ? '...' : '' %>
-              </small>
-
-              <div class="card-text d-flex justify-content-start gap-5 mt-3">
-                <p>
-                  <strong>Categoria:</strong>
-                  <%= products[i].category_name %>
-                </p>
-                <p>
-                  <strong>Jogo:</strong>
-                  <%= products[i].game_name %>
-                </p>
-
-                <p>
-                  <strong>Preço:</strong>
-                  R$ <%= products[i].price.toFixed(2) %>
-                </p>
-                <p>
-                  <strong>Quantidade:</strong>
-                  <%= products[i].stock %>
-                </p>
+<%- include('../components/head.ejs', { title: 'Carrinho' }) %>
+<div class="d-flex flex-column min-vh-100">
+  <%- include('../components/header.ejs') %>
+  <main class="container mt-4 flex-grow-1 mb-5">
+    <h1>Carrinho</h1>
+    <% if (error) { %><p class="alert alert-danger" role="alert"><%= error %></p><% } %>
+    <% if (!cart.items.length) { %>
+      <p class="alert alert-info">Seu carrinho está vazio.</p>
+      <a href="/products" class="btn btn-dark">Ver produtos</a>
+    <% } else { %>
+      <% for (const product of cart.items) { %>
+        <article class="card mb-2">
+          <div class="row g-0 align-items-center">
+            <div class="col-md-2 text-center">
+              <%- include('../components/product-image.ejs', { product }) %>
+            </div>
+            <div class="col-md">
+              <div class="card-body">
+                <h2 class="h5"><%= product.name %></h2>
+                <p class="mb-1">Quantidade: <%= product.quantity %></p>
+                <% if (product.archived_at) { %>
+                  <p class="text-danger mb-0">Produto indisponível.</p>
+                <% } else { %>
+                  <p class="mb-0">Preço unitário: R$ <%= formatPrice(product.price) %></p>
+                  <% if (product.stock < product.quantity) { %>
+                    <p class="text-danger mb-0">Estoque disponível: <%= product.stock %></p>
+                  <% } %>
+                <% } %>
               </div>
             </div>
+            <form class="col-md-auto p-3" action="/cart/items/<%= product.item_id %>?_method=DELETE" method="post">
+              <%- include('../components/csrf.ejs') %>
+              <button type="submit" class="btn btn-outline-dark btn-sm">Remover</button>
+            </form>
           </div>
-
-          <div
-            class="col col-sm-auto border-start d-flex flex-column align-items-center justify-content-center gap-2 px-2"
-          >
-            <button
-              type="button"
-              class="btn btn-sm btn-outline-dark"
-              data-bs-toggle="modal"
-              data-bs-target="#staticBackdrop<%= products[i].id %>"
-            >
-              Remover
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="staticBackdrop<%= products[i].id %>"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="staticBackdropLabel">
-                <i class="bi bi-exclamation-circle-fill"></i>
-                Remover Produto do Carrinho
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <p>Você tem certeza que deseja remover este produto do carrinho?</p>
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-sm btn-outline-dark"
-                data-bs-dismiss="modal"
-              >
-                Fechar
-              </button>
-              <form
-                action="/user/<%=user.id%>/cart/product/<%=products[i].id%>/delete"
-                method="post"
-              >
-                <input
-                  type="hidden"
-                  name="product_id"
-                  value="<%= products[i].id %>"
-                />
-                <button type="submit" class="btn btn-sm btn-dark">Remover</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
+        </article>
+      <% } %>
+      <form action="/cart/checkout" method="post" class="d-flex flex-wrap gap-3 align-items-center justify-content-end mt-4">
+        <%- include('../components/csrf.ejs') %>
+        <input type="hidden" name="orderId" value="<%= cart.id %>">
+        <strong>Total: R$ <%= formatCents(cart.total) %></strong>
+        <button type="submit" class="btn btn-dark">Finalizar compra</button>
+      </form>
     <% } %>
   </main>
-
-  <%- await include('../components/footer.ejs') %>
+  <%- include('../components/footer.ejs') %>
 </div>
+</body>
+</html>

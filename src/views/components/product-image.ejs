@@ -1,0 +1,6 @@
+<% const source = imageUrl(product.image_path); %>
+<% if (source) { %>
+  <img src="<%= source %>" class="img-fluid p-2" alt="<%= product.name %>" style="max-height: 210px" loading="lazy">
+<% } else { %>
+  <span class="text-body-secondary small p-2">Sem imagem</span>
+<% } %>

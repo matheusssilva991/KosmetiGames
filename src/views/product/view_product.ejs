@@ -1,102 +1,42 @@
-<%- await include('../components/head.ejs', { title: 'Visualizar produto' }) %>
-
+<%- include('../components/head.ejs', { title: product.name }) %>
 <div class="d-flex flex-column min-vh-100">
-  <%- await include('../components/header.ejs') %>
-
-  <main
-    class="container d-flex flex-column align-items-center mt-5 pt-4 w-100 flex-grow-1 mb-5"
-  >
-    <div class="d-flex gap-5 w-80 justify-content-center">
-      <div class="card" style="max-width: 800px; min-width: 800px">
-        <div class="row g-0 ps-3">
-          <div class="col-md-4 d-flex align-items-center">
-            <img
-              src="<%= product.image_path %>"
-              class="img-fluid rounded-start"
-              alt="<%= product.name %>"
-            />
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h5 class="card-title">
-                <%= product.name %> - <%= product.game_name %>
-              </h5>
-              <p class="card-text text-body-secondary">
-                <small> Empresa: <%= product.game_enterprise %> </small>
-              </p>
-              <p class="card-text mt-4 d-flex flex-column">
-                <strong>
-                  R$ <span class="fs-2 fw-normal"> <%= product.price.toFixed(2) %> </span>
-                </strong>
-
-                <small class="text-body-secondary">
-                  á vista, no PIX, no boleto ou até 12x no cartão
-                </small>
-              </p>
-            </div>
+  <%- include('../components/header.ejs') %>
+  <main class="container mt-5 flex-grow-1 mb-5">
+    <div class="card">
+      <div class="row g-0">
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+          <%- include('../components/product-image.ejs', { product }) %>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h1 class="h4"><%= product.name %></h1>
+            <p class="text-body-secondary"><%= product.game_name %> · <%= product.category_name %></p>
+            <p style="white-space: pre-line"><%= product.description %></p>
+            <p class="fs-2">R$ <%= formatPrice(product.price) %></p>
+            <% if (user?.id === product.user_id) { %>
+              <a href="/products/<%= product.id %>/edit" class="btn btn-outline-dark">Editar</a>
+            <% } else if (product.stock === 0) { %>
+              <p class="text-body-secondary">Esgotado</p>
+            <% } else if (user) { %>
+              <form action="/cart/items" method="post" class="d-flex flex-wrap align-items-end gap-2">
+                <%- include('../components/csrf.ejs') %>
+                <input type="hidden" name="productId" value="<%= product.id %>">
+                <div>
+                  <label class="form-label" for="quantity">Quantidade</label>
+                  <input class="form-control" id="quantity" type="number" name="quantity"
+                         value="1" min="1" max="<%= product.stock %>" required>
+                </div>
+                <button type="submit" class="btn btn-dark">Adicionar ao carrinho</button>
+              </form>
+            <% } else { %>
+              <a href="/login" class="btn btn-dark">Entrar para comprar</a>
+            <% } %>
           </div>
         </div>
       </div>
-
-
-      <form action="/user/<%= user.id %>/cart/product/<%= product.id %>" method="post" class="bg-white p-3 w-100 border rounded-2">
-        <div
-          class="form-group d-flex justify-content-between gap-3 align-items-baseline mb-5"
-        >
-          <label class="form-label" for="product<%= product.id%>stock">
-            <small>Quantidade:</small>
-          </label>
-          <input
-            type="number"
-            class="form-control form-control-sm"
-            id="product<%= product.id%>stock"
-            min="1"
-            max="<%= product.stock %>"
-            name="quantity"
-          />
-        </div>
-
-        <% if (user.id != product.user_id) { %> <% if (product.stock> 0) { %> <%
-        if (user && Object.values(user).length !=0) { %>
-        <button type="submit" class="btn btn-sm btn-outline-dark w-100">
-          <i class="bi bi-cart-plus"></i>
-          Carrinho
-        </button>
-        <% } else { %>
-        <a href="/login" class="btn btn-sm btn-outline-dark w-100">
-          <i class="bi bi-cart-plus"></i>
-          Carrinho
-        </a>
-        <% } %> <% } else { %>
-        <button class="btn btn-sm btn-outline-dark w-100" disabled>
-          <i class="bi bi-cart-plus"></i>
-          Esgotado
-        </button>
-        <% } %> <% } else { %>
-        <a
-          href="/user/<%= user.id %>/product/<%= product.id %>/edit"
-          class="btn btn-sm btn-outline-dark w-100"
-        >
-          <i class="bi bi-pencil"></i>
-          Editar
-        </a>
-        <% } %>
-
-        <% if (user && Object.values(user).length != 0) { %>
-          <a href="/user/<%= user.id %>/cart" class="btn btn-sm btn-dark w-100 mt-3">
-              <i class="bi bi-bag"></i>
-            Comprar
-          </a>
-        <% } else { %>
-          <a href="/login" class="btn btn-sm btn-dark w-100 mt-3">
-          <i class="bi bi-bag"></i>
-          Comprar
-        </a>
-        <% } %>
-
-      </form>
     </div>
   </main>
-
-  <%- await include('../components/footer.ejs') %>
+  <%- include('../components/footer.ejs') %>
 </div>
+</body>
+</html>

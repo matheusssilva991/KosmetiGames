@@ -1,11 +1,11 @@
-<header class="container-fluix bg-dark text-white d-flex align-items-center px-5 py-3 justify-content-between">
+<header class="container-fluid bg-dark text-white d-flex align-items-center px-5 py-3 justify-content-between">
     <h1 class="h1 m-0">
-        <a href="/" class="text-white text-decoration-none">
-            KosmeticGames
+        <a href="/products" class="text-white text-decoration-none">
+            KosmetiGames
         </a>
     </h1>
 
-    <% if (user && Object.values(user).length != 0) { %>
+    <% if (user) { %>
         <nav class="d-flex justify-content-end" id="header-form-nav">
             <ul class="nav d-flex gap-4">
                 <li class="nav-item px-2">
@@ -13,20 +13,23 @@
                         <button class="btn text-white dropdown-toggle d-flex align-items-center gap-2 py-0 header-nav-item"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person fs-3"></i>
-                            <span class="header-nav-link-text">
-                                <p class="m-0"><%= user.name %></p>
-                            </span>
+                            <span class="header-nav-link-text"><%= user.name %></span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/user/<%= user.id %>">Editar Perfil</a></li>
-                            <li><a class="dropdown-item" href="/user/<%= user.id %>/products">Meus Produtos</a></li>
-                            <li><a class="dropdown-item" href="/user/<%= user.id %>/purchased-products">Produtos adquiridos</a></li>
-                            <li><a class="dropdown-item" href="/logout">Sair</a></li>
+                            <li><a class="dropdown-item" href="/account">Editar Perfil</a></li>
+                            <li><a class="dropdown-item" href="/account/products">Meus Produtos</a></li>
+                            <li><a class="dropdown-item" href="/account/orders">Produtos adquiridos</a></li>
+                            <li>
+                                <form action="/logout" method="post">
+                                    <%- include('./csrf.ejs') %>
+                                    <button type="submit" class="dropdown-item">Sair</button>
+                                </form>
+                            </li>
                         </ul>
                     </div>
                 </li>
                 <li class="nav-item d-flex align-items-center header-nav-item px-2">
-                    <a href="/user/<%= user.id %>/cart" class="nav-link text-white d-flex align-items-center gap-2 p-0">
+                    <a href="/cart" class="nav-link text-white d-flex align-items-center gap-2 p-0">
                         <i class="bi bi-cart fs-4"></i>
                     </a>
                 </li>
@@ -40,8 +43,7 @@
                     <a href="/login" class="nav-link text-white d-flex align-items-center gap-2 p-0">
                         <i class="bi bi-person fs-3"></i>
                         <span class="header-nav-link-text">
-                            <p class="m-0">Entrar ou</p>
-                            <p class="m-0">Registrar</p>
+                            Entrar ou registrar
                         </span>
                     </a>
                 </li>

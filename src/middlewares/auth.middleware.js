@@ -1,81 +1,56 @@
-/**
- * Middleware de Autenticação
- *
- * Fornece middlewares para controle de acesso às rotas,
- * verificando se o usuário está autenticado e se tem permissão
- * para acessar determinados recursos.
- *
- * @author Matheus Santos Silva
- */
+const { randomBytes, timingSafeEqual } = require("node:crypto");
+const { HttpError } = require("../lib/http");
 
-/**
- * Verifica se um objeto está vazio
- *
- * @param {Object} obj - Objeto a ser verificado
- * @returns {boolean} True se o objeto estiver vazio
- */
-function isEmptyObject(obj) {
-   return Object.values(obj).length == 0;
+function requireUser(req, res, next) {
+    if (!req.session.user?.id) {
+        return res.redirect(
+            req.method === "GET" || req.method === "HEAD" ? 302 : 303,
+            "/login",
+        );
+    }
+    return next();
 }
 
-class AuthMiddleware {
-  /**
-   * Middleware de autenticação
-   *
-   * Verifica se o usuário está autenticado através da sessão.
-   * Se não estiver, redireciona para a página de login.
-   *
-   * @param {Object} req - Request do Express
-   * @param {Object} res - Response do Express
-   * @param {Function} next - Próximo middleware
-   */
-  auth(req, res, next) {
-    if (req.session.user && !isEmptyObject(req.session.user)) {
-      next();
-    } else {
-      res.redirect('/login');
+function requireGuest(req, res, next) {
+    if (req.session.user?.id) {
+        return res.redirect(
+            req.method === "GET" || req.method === "HEAD" ? 302 : 303,
+            "/products",
+        );
     }
-  }
-
-  /**
-   * Middleware de não-autenticação
-   *
-   * Verifica se o usuário NÃO está autenticado.
-   * Útil para páginas como login e registro que só devem
-   * ser acessadas por usuários não autenticados.
-   *
-   * @param {Object} req - Request do Express
-   * @param {Object} res - Response do Express
-   * @param {Function} next - Próximo middleware
-   */
-  unauth(req, res, next) {
-    if (req.session.user && !isEmptyObject(req.session.user)) {
-      res.redirect('/');
-    } else {
-      next();
-    }
-  }
-
-  /**
-   * Middleware de verificação de propriedade
-   *
-   * Verifica se o usuário autenticado é o dono do recurso
-   * que está tentando acessar (baseado no ID da URL).
-   * Previne que usuários acessem recursos de outros usuários.
-   *
-   * @param {Object} req - Request do Express
-   * @param {Object} res - Response do Express
-   * @param {Function} next - Próximo middleware
-   */
-  owner(req, res, next) {
-    if (req.session.user.id == req.params.id) {
-      next();
-    } else {
-      res.redirect('/');
-    }
-  }
-
-
+    return next();
 }
 
-module.exports = new AuthMiddleware();
+function exposeSession(req, res, next) {
+    res.locals.user = req.session.user ?? null;
+    if (req.session.user || /^\/(login|register)\/?$/i.test(req.path)) {
+        res.set("Cache-Control", "no-store");
+        res.locals.csrfToken = req.session.csrfToken ??=
+            randomBytes(32).toString("hex");
+    }
+    next();
+}
+
+function verifyCsrf(req, res, next) {
+    const token = req.body?._csrf;
+    const expected = req.session.csrfToken;
+    if (
+        typeof token !== "string" ||
+        !/^[a-f0-9]{64}$/.test(token) ||
+        !expected ||
+        !timingSafeEqual(
+            Buffer.from(token, "hex"),
+            Buffer.from(expected, "hex"),
+        )
+    ) {
+        return next(
+            new HttpError(
+                403,
+                "Formulário inválido ou expirado. Recarregue a página e tente novamente.",
+            ),
+        );
+    }
+    return next();
+}
+
+module.exports = { requireUser, requireGuest, exposeSession, verifyCsrf };

@@ -1,313 +1,109 @@
-# 🎮 KosmetiGames - E-commerce de Produtos de Games
+# KosmetiGames
 
-![Node.js](https://img.shields.io/badge/Node.js-18.x-green)
-![Express](https://img.shields.io/badge/Express-4.19-blue)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-orange)
-![Docker](https://img.shields.io/badge/Docker-Ready-blue)
+E-commerce de produtos relacionados a games, desenvolvido para a disciplina de Empreendedorismo da UESC. A aplicação usa Node.js 24 LTS, Express, EJS e MySQL 8.0.
 
-E-commerce especializado em produtos relacionados a games, desenvolvido como projeto da disciplina de Empreendedorismo da UESC (Universidade Estadual de Santa Cruz).
+O catálogo permite buscar produtos e filtrar por jogo e categoria. Usuários cadastrados podem anunciar produtos, editar o perfil e fazer compras simuladas. A finalização baixa o estoque e registra os dados de cada item no histórico.
 
-## 📋 Índice
+## Executar com Docker
 
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Configuração](#configuração)
-- [Executando a Aplicação](#executando-a-aplicação)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [API e Rotas](#api-e-rotas)
-- [Docker](#docker)
-- [Contribuindo](#contribuindo)
-- [Autores](#autores)
-- [Licença](#licença)
+1. Copie o arquivo de exemplo e configure as senhas do MySQL e a chave de sessão.
 
-## 🎯 Sobre o Projeto
+   ```bash
+   cp .env.example .env
+   openssl rand -hex 32
+   ```
 
-O **KosmetiGames** é uma plataforma de e-commerce voltada para a venda de produtos relacionados ao universo dos games, incluindo skins, itens cosméticos, DLCs e outros produtos digitais e físicos. O projeto implementa um sistema completo de autenticação, gerenciamento de produtos, carrinho de compras e histórico de compras.
+   Use a saída do segundo comando em `SESSION_SECRET`.
 
-### Principais Características
+2. Suba os serviços e abra `http://localhost:8080/products`.
 
-- Sistema de autenticação seguro com sessões
-- Gerenciamento completo de produtos (CRUD)
-- Sistema de carrinho de compras
-- Filtros por jogos e categorias
-- Upload de imagens para produtos
-- Histórico de compras do usuário
-- Interface responsiva com EJS
+   ```bash
+   docker compose up --build -d
+   docker compose ps
+   ```
 
-## ⚡ Funcionalidades
+   Na primeira inicialização, o MySQL cria as tabelas e cadastra os jogos e as categorias. O volume `db_data` guarda o banco e `product_images` guarda os uploads. A porta local do MySQL é `3307`.
 
-### Para Usuários
+## Executar sem Docker
 
-- ✅ Cadastro e autenticação de usuários
-- ✅ Navegação por catálogo de produtos
-- ✅ Filtros por jogo e categoria
-- ✅ Visualização detalhada de produtos
-- ✅ Adicionar produtos ao carrinho
-- ✅ Finalizar compras
-- ✅ Histórico de produtos comprados
-- ✅ Edição de perfil
+1. Crie um banco MySQL e conceda a um usuário acesso a ele. Configure `MYSQL_HOST`, `MYSQL_PORT`, `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` e `SESSION_SECRET` no `.env`. Se estiver usando o MySQL do Compose, a porta local padrão é `3307`.
 
-### Para Vendedores
+2. Em um banco vazio, importe o esquema e depois as opções do catálogo. No exemplo, o banco é `ecommerce` e o MySQL está na porta `3306`.
 
-- ✅ Cadastro de produtos com imagens
-- ✅ Gerenciamento de produtos próprios (editar/excluir)
-- ✅ Visualização de produtos cadastrados
-- ✅ Definição de preço, estoque e descrição
+   ```bash
+   mysql -h 127.0.0.1 -P 3306 -u kosmetigames -p ecommerce < src/database/schemas/schema.sql
+   mysql -h 127.0.0.1 -P 3306 -u kosmetigames -p ecommerce < src/database/schemas/seed.sql
+   ```
 
-## 🚀 Tecnologias Utilizadas
+3. Instale as dependências e inicie a aplicação.
 
-### Backend
+   ```bash
+   npm ci
+   npm start
+   ```
 
-- **Node.js** - Ambiente de execução JavaScript
-- **Express** - Framework web para Node.js
-- **MySQL2** - Driver MySQL para Node.js
-- **EJS** - Template engine para renderização de views
+   Use `npm run dev` para reiniciar ao editar o código. Os uploads locais ficam em `public/images`. Em HTTPS, use `SESSION_COOKIE_SECURE=true`. Se o HTTPS terminar em um proxy reverso de confiança diretamente à frente da aplicação, configure também `TRUST_PROXY=true`.
 
-### Autenticação e Segurança
+## Atualizar um banco existente
 
-- **bcrypt** - Hash de senhas
-- **jsonwebtoken** - Geração e validação de tokens JWT
-- **express-session** - Gerenciamento de sessões
+1. Pare a aplicação para suspender gravações e faça backup do banco e da pasta de imagens antes de recriar o container. Se o Compose antigo ainda usa o nome `ecommerce-app`, copie as imagens dele, inclusive com o container parado.
 
-### Upload e Arquivos
+   ```bash
+   mkdir -p ../kosmetigames-backup
+   docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mysqldump -uroot --single-transaction --no-tablespaces "$MYSQL_DATABASE"' > ../kosmetigames-backup/ecommerce.sql
+   docker cp ecommerce-app:/app/public/images ../kosmetigames-backup/images
+   ```
 
-- **Multer** - Middleware para upload de arquivos
+2. Aplique a migração com a aplicação parada. Em execução local, rode `npm run db:migrate` com o `.env` apontando para o banco existente. Em Docker, use o mesmo projeto do Compose que já contém o volume `db_data`.
 
-### Utilitários
+   ```bash
+   docker compose up -d --wait db
+   docker compose run --build --rm app npm run db:migrate
+   ```
 
-- **dotenv** - Gerenciamento de variáveis de ambiente
-- **cors** - Controle de acesso CORS
-- **nodemon** - Auto-reload durante desenvolvimento
+   A migração preserva os IDs, pode ser reaplicada e informa os registros que exigem revisão, como pedidos sem comprador, quantidades ausentes ou carrinhos abertos duplicados. Os itens de compras anteriores recebem os dados disponíveis no catálogo na data da migração e são identificados como estimativas. A baixa de estoque começa nas próximas finalizações.
 
-### DevOps
+3. Se houver imagens do container antigo, copie o backup para o volume antes de iniciar a aplicação nova.
 
-- **Docker** - Containerização da aplicação
-- **Docker Compose** - Orquestração de containers
+   ```bash
+   docker compose run --rm --no-deps -v "$PWD/../kosmetigames-backup/images:/backup:ro" app \
+     cp -a --no-preserve=ownership /backup/. /app/public/images/
+   docker compose up -d app
+   ```
 
-## 📦 Pré-requisitos
+## Rotas
 
-Antes de começar, você precisa ter instalado em sua máquina:
+| Método | URL | Uso |
+| --- | --- | --- |
+| GET | `/products` | Catálogo com filtros `game`, `category` e `search` |
+| GET | `/products/:productId` | Detalhes do produto |
+| GET / POST | `/register`, `/login` | Cadastro e autenticação |
+| POST | `/logout` | Encerra a sessão |
+| GET / PATCH | `/account` | Exibe e atualiza o perfil |
+| GET | `/account/products` | Lista os produtos próprios |
+| GET | `/products/new`, `/products/:productId/edit` | Formulários de cadastro e edição |
+| POST | `/products` | Cadastra um produto |
+| PATCH / DELETE | `/products/:productId` | Atualiza ou arquiva um produto próprio |
+| GET | `/cart` | Exibe o carrinho |
+| POST | `/cart/items` | Adiciona `productId` e `quantity` ao carrinho |
+| DELETE | `/cart/items/:itemId` | Remove um item do carrinho |
+| POST | `/cart/checkout` | Finaliza o carrinho identificado por `orderId` |
+| GET | `/account/orders` | Exibe o histórico do comprador |
 
-- [Node.js](https://nodejs.org/) (versão 18.x ou superior)
-- [MySQL](https://www.mysql.com/) (versão 8.0 ou superior)
-- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) (opcional, mas recomendado)
-- [Git](https://git-scm.com/)
+Os formulários incluem um token CSRF e usam POST com `?_method=PATCH` ou `?_method=DELETE` quando necessário. Os endereços GET antigos de navegação redirecionam para as rotas equivalentes. As páginas da conta, do carrinho e o gerenciamento de produtos exigem sessão.
 
-## 🔧 Instalação
-
-### 1. Clone o repositório
+## Testes
 
 ```bash
-git clone https://github.com/matheusssilva991/KosmetiGames.git
-cd KosmetiGames
+npm test
 ```
 
-### 2. Instale as dependências
+Para incluir os testes de integração, defina `TEST_MYSQL_URL` com as credenciais de um MySQL 8.0 de testes. O usuário precisa poder criar e remover bancos temporários. A suíte usa nomes próprios e remove apenas os bancos que cria.
 
 ```bash
-npm install
+TEST_MYSQL_URL='mysql://usuario:senha@127.0.0.1:3307' npm test
 ```
 
-### 3. Configure o banco de dados
+## Autoria
 
-Execute os scripts SQL localizados em `src/database/schemas/`:
-
-```bash
-# Criar a estrutura do banco
-mysql -u seu_usuario -p < src/database/schemas/schema.sql
-
-# Inserir dados iniciais (jogos e categorias)
-mysql -u seu_usuario -p < src/database/schemas/games_and_cateegories_inserts.sql
-```
-
-## ⚙️ Configuração
-
-### Variáveis de Ambiente
-
-Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
-
-```env
-# Servidor
-PORT=8080
-
-# Banco de Dados
-DB_HOST=localhost
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_DATABASE=nome_do_banco
-DB_PORT=3306
-
-# Segurança
-SECRET_KEY=sua_chave_secreta_jwt
-SESSION_SECRET=sua_chave_secreta_sessao
-```
-
-> **Nota:** Nunca commite o arquivo `.env` no repositório. Mantenha-o no `.gitignore`.
-
-## 🎮 Executando a Aplicação
-
-### Modo Desenvolvimento (Local)
-
-```bash
-npm run start
-```
-
-A aplicação estará disponível em `http://localhost:8080`
-
-### Modo Produção com Docker
-
-#### Primeira execução (criar containers)
-
-```bash
-docker compose up --build
-```
-
-#### Iniciar serviços existentes
-
-```bash
-docker compose start
-```
-
-#### Parar serviços
-
-```bash
-docker compose stop
-```
-
-#### Parar e remover containers
-
-```bash
-docker compose down
-```
-
-## 📁 Estrutura do Projeto
-
-```
-KosmetiGames/
-├── public/                      # Arquivos estáticos
-│   ├── css/                     # Estilos CSS
-│   │   └── styles.css
-│   └── images/                  # Imagens de produtos
-├── src/                         # Código fonte
-│   ├── controllers/             # Controladores (lógica de rotas)
-│   │   ├── auth.controller.js
-│   │   ├── product.controller.js
-│   │   └── user.controller.js
-│   ├── database/                # Configuração do banco de dados
-│   │   ├── config.js
-│   │   ├── connection.js
-│   │   └── schemas/             # Scripts SQL
-│   │       ├── schema.sql
-│   │       └── games_and_cateegories_inserts.sql
-│   ├── middlewares/             # Middlewares personalizados
-│   │   └── auth.middleware.js
-│   ├── models/                  # Modelos de dados
-│   │   ├── cart.model.js
-│   │   ├── category.model.js
-│   │   ├── game.model.js
-│   │   ├── product.model.js
-│   │   └── user.model.js
-│   ├── multer/                  # Configuração de upload
-│   │   └── multer.js
-│   ├── routes/                  # Definição de rotas
-│   │   └── routes.js
-│   ├── services/                # Lógica de negócios
-│   │   ├── auth.service.js
-│   │   ├── cart.service.js
-│   │   ├── category.service.js
-│   │   ├── game.service.js
-│   │   ├── product.service.js
-│   │   └── user.service.js
-│   ├── views/                   # Templates EJS
-│   │   ├── components/          # Componentes reutilizáveis
-│   │   ├── product/             # Views de produtos
-│   │   ├── user/                # Views de usuário
-│   │   ├── home.ejs
-│   │   └── login.ejs
-│   └── index.js                 # Ponto de entrada da aplicação
-├── dev_files/                   # Arquivos de desenvolvimento
-├── .env                         # Variáveis de ambiente (não versionado)
-├── .gitignore                   # Arquivos ignorados pelo Git
-├── docker-compose.yml           # Configuração Docker Compose
-├── Dockerfile                   # Configuração Docker
-├── package.json                 # Dependências e scripts
-└── README.md                    # Este arquivo
-```
-
-## 🛣️ API e Rotas
-
-### Autenticação
-
-- `GET /login` - Exibe página de login
-- `POST /login` - Realiza autenticação
-- `GET /logout` - Realiza logout
-
-### Produtos
-
-- `GET /` - Página inicial com listagem de produtos
-- `GET /product/:id` - Detalhes de um produto
-- `GET /user/:id/product/register` - Formulário de cadastro de produto
-- `POST /user/:id/product/register` - Criar novo produto
-- `GET /user/:id/product/:product_id/edit` - Formulário de edição
-- `POST /user/:id/product/:product_id/edit` - Atualizar produto
-- `DELETE /user/:id/product/:product_id` - Excluir produto
-- `GET /user/:id/products` - Lista produtos do usuário
-
-### Usuário
-
-- `GET /user/register` - Formulário de cadastro
-- `POST /user/register` - Criar novo usuário
-- `GET /user/:id` - Visualizar perfil
-- `GET /user/:id/edit` - Formulário de edição
-- `POST /user/:id/edit` - Atualizar usuário
-
-### Carrinho
-
-- `GET /user/:id/cart` - Visualizar carrinho
-- `POST /cart/add` - Adicionar produto ao carrinho
-- `POST /cart/remove` - Remover produto do carrinho
-- `POST /cart/checkout` - Finalizar compra
-
-## 🐳 Docker
-
-O projeto inclui configuração completa para Docker, facilitando a implantação e desenvolvimento.
-
-### Serviços Configurados
-
-- **app**: Aplicação Node.js
-- **db**: Banco de dados MySQL
-
-### Volumes
-
-- `mysql_data`: Persistência dos dados do MySQL
-- Bind mount do código fonte para desenvolvimento
-
-### Portas
-
-- `8080`: Aplicação web
-- `3306`: MySQL (mapeado localmente)
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Para contribuir:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
-
-## 👨‍💻 Autores
-
-- **Matheus Santos Silva** - [GitHub](https://github.com/matheusssilva991)
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins educacionais como parte da disciplina de Empreendedorismo da UESC.
-
----
-
-⭐ Se este projeto foi útil para você, considere dar uma estrela no repositório!
+Matheus Santos Silva e Igor Sousa. Projeto desenvolvido para fins educacionais na UESC.

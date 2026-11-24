@@ -1,5 +1,3 @@
-use ecommerce;
-
 -- INSERTS FOR game TABLE
 
 INSERT INTO game (name, enterprise) VALUES ('League of Legends', 'RIOT Games');

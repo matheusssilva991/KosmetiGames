@@ -1,0 +1,12 @@
+<%- include('./components/head.ejs', { title: 'Solicitação' }) %>
+<div class="d-flex flex-column min-vh-100">
+  <%- include('./components/header.ejs') %>
+  <main class="container mt-5 flex-grow-1">
+    <h1><%= status === 404 ? 'Página indisponível' : 'Não foi possível continuar' %></h1>
+    <p role="alert"><%= message %></p>
+    <a href="/products" class="btn btn-dark">Voltar ao catálogo</a>
+  </main>
+  <%- include('./components/footer.ejs') %>
+</div>
+</body>
+</html>
